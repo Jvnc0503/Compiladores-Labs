@@ -40,7 +40,20 @@ Token* Scanner::nextToken() {
             token = new Token(Token::ELSE, word, 0, word.length());
         } else if (word == "endif") {
             token = new Token(Token::ENDIF, word, 0, word.length());
-        } else {
+        } else if (word == "while") {
+            token =  new Token(Token::WHILE, word, 0, word.length());
+        } else if (word == "do") {
+            token = new Token(Token::DO, word, 0, word.length());
+        } else if (word == "endwhile") {
+            token = new Token(Token::ENDWHILE, word, 0, word.length());
+        } else if (word == "for") {
+            token = new Token(Token::FOR, word, 0, word.length());
+        } else if (word == "endfor") {
+            token = new Token(Token::ENDFOR, word, 0, word.length());
+        } else if (word == "ifexp") {
+            token = new Token(Token::IFEXP, word, 0, word.length());
+        }
+        else {
             token = new Token(Token::ID, word, 0, word.length());
         }
     }
