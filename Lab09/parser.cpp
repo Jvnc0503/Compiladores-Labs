@@ -201,14 +201,17 @@ Exp *Parser::parseFactor() {
         e = parseCExp();
         if (!match(Token::COMMA)) {
             cout << "Error: se esperaba una coma después de la expresión." << endl;
+            exit(0);
         }
         Exp *e2 = parseCExp();
         if (!match(Token::COMMA)) {
             cout << "Error: se esperaba una coma después de la expresión." << endl;
+            exit(0);
         }
         Exp *e3 = parseCExp();
         if (!match(Token::PD)) {
             cout << "Error: se esperaba un paréntesis derecho." << endl;
+            exit(0);
         }
         return new IfExp(e, e2, e3);
     }
