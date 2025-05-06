@@ -51,6 +51,17 @@ int PrintVisitor::visit(IdentifierExp *exp) {
     return 0;
 }
 
+int PrintVisitor::visit(IfExp *exp) {
+    cout << "ifexp(";
+    exp->first->accept(this);
+    cout << ", ";
+    exp->second->accept(this);
+    cout << ", ";
+    exp->third->accept(this);
+    cout << ")";
+    return 0;
+}
+
 void PrintVisitor::visit(AssignStatement *stm) {
     cout << stm->id << " = ";
     stm->rhs->accept(this);
@@ -140,6 +151,13 @@ int EVALVisitor::visit(NumberExp *exp) {
 
 int EVALVisitor::visit(IdentifierExp *exp) {
     return memoria[exp->name];
+}
+
+int EVALVisitor::visit(IfExp *exp) {
+    if (exp->first->accept(this)) {
+        return exp->second->accept(this);
+    }
+    return exp->third->accept(this);
 }
 
 void EVALVisitor::visit(AssignStatement *stm) {

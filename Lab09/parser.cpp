@@ -185,9 +185,11 @@ Exp *Parser::parseFactor() {
     Exp *e;
     if (match(Token::NUM)) {
         return new NumberExp(stoi(previous->text));
-    } else if (match(Token::ID)) {
+    }
+    if (match(Token::ID)) {
         return new IdentifierExp(previous->text);
-    } else if (match(Token::PI)) {
+    }
+    if (match(Token::PI)) {
         e = parseCExp();
         if (!match(Token::PD)) {
             cout << "Falta paréntesis derecho" << endl;
@@ -195,7 +197,22 @@ Exp *Parser::parseFactor() {
         }
         return e;
     }
-    cout << "Error: se esperaba un número o identificador." << endl;
+    if (match(Token::IFEXP) && match(Token::PI)) {
+        e = parseCExp();
+        if (!match(Token::COMMA)) {
+            cout << "Error: se esperaba una coma después de la expresión." << endl;
+        }
+        Exp *e2 = parseCExp();
+        if (!match(Token::COMMA)) {
+            cout << "Error: se esperaba una coma después de la expresión." << endl;
+        }
+        Exp *e3 = parseCExp();
+        if (!match(Token::PD)) {
+            cout << "Error: se esperaba un paréntesis derecho." << endl;
+        }
+        return new IfExp(e, e2, e3);
+    }
+    cout << "Error: se esperaba un número, identificador o ifexpression." << endl;
     exit(0);
 }
 

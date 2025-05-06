@@ -25,6 +25,10 @@ NumberExp::~NumberExp() {
 IdentifierExp::~IdentifierExp() {
 }
 
+int IfExp::accept(Visitor *visitor) {
+    return visitor->visit(this);
+}
+
 AssignStatement::AssignStatement(string id, Exp *e): id(id), rhs(e) {
 }
 

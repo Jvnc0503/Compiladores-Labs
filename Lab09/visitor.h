@@ -3,6 +3,7 @@
 #include "exp.h"
 #include <list>
 
+class IfExp;
 class WhileStatement;
 class BinaryExp;
 class NumberExp;
@@ -20,6 +21,8 @@ public:
     virtual int visit(NumberExp *exp) = 0;
 
     virtual int visit(IdentifierExp *exp) = 0;
+
+    virtual int visit(IfExp *exp) = 0;
 
     virtual void visit(AssignStatement *stm) = 0;
 
@@ -40,6 +43,8 @@ public:
 
     int visit(IdentifierExp *exp) override;
 
+    int visit(IfExp *exp) override;
+
     void visit(AssignStatement *stm) override;
 
     void visit(PrintStatement *stm) override;
@@ -58,6 +63,8 @@ public:
     int visit(NumberExp *exp) override;
 
     int visit(IdentifierExp *exp) override;
+
+    int visit(IfExp *exp) override;
 
     void visit(AssignStatement *stm) override;
 

@@ -52,6 +52,24 @@ public:
     ~IdentifierExp();
 };
 
+class IfExp : public Exp {
+public:
+    Exp *first;
+    Exp *second;
+    Exp *third;
+
+    IfExp(Exp *first, Exp *second, Exp *third): first(first), second(second), third(third) {
+    }
+
+    int accept(Visitor *visitor);
+
+    ~IfExp() {
+        delete first;
+        delete second;
+        delete third;
+    }
+};
+
 class Stm {
 public:
     virtual int accept(Visitor *visitor) = 0;

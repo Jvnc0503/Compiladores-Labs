@@ -5,27 +5,26 @@
 
 using namespace std;
 
-Scanner::Scanner(const char* s):input(s),first(0), current(0) { }
+Scanner::Scanner(const char *s): input(s), first(0), current(0) {
+}
 
 
 bool is_white_space(char c) {
     return c == ' ' || c == '\n' || c == '\r' || c == '\t';
 }
 
-Token* Scanner::nextToken() {
-    Token* token;
-    while (current < input.length() &&  is_white_space(input[current]) ) current++;
+Token *Scanner::nextToken() {
+    Token *token;
+    while (current < input.length() && is_white_space(input[current])) current++;
     if (current >= input.length()) return new Token(Token::END);
-    char c  = input[current];
+    char c = input[current];
     first = current;
     if (isdigit(c)) {
         current++;
         while (current < input.length() && isdigit(input[current]))
             current++;
         token = new Token(Token::NUM, input, first, current - first);
-    }
-
-    else if (isalpha(c)) {
+    } else if (isalpha(c)) {
         current++;
         while (current < input.length() && isalnum(input[current]))
             current++;
@@ -41,7 +40,7 @@ Token* Scanner::nextToken() {
         } else if (word == "endif") {
             token = new Token(Token::ENDIF, word, 0, word.length());
         } else if (word == "while") {
-            token =  new Token(Token::WHILE, word, 0, word.length());
+            token = new Token(Token::WHILE, word, 0, word.length());
         } else if (word == "do") {
             token = new Token(Token::DO, word, 0, word.length());
         } else if (word == "endwhile") {
@@ -52,20 +51,23 @@ Token* Scanner::nextToken() {
             token = new Token(Token::ENDFOR, word, 0, word.length());
         } else if (word == "ifexp") {
             token = new Token(Token::IFEXP, word, 0, word.length());
-        }
-        else {
+        } else {
             token = new Token(Token::ID, word, 0, word.length());
         }
-    }
-
-    else if (strchr("+-*/()=;<", c)) {
-        switch(c) {
-            case '+': token = new Token(Token::PLUS, c); break;
-            case '-': token = new Token(Token::MINUS, c); break;
-            case '*': token = new Token(Token::MUL, c); break;
-            case '/': token = new Token(Token::DIV, c); break;
-            case '(': token = new Token(Token::PI, c); break;
-            case ')': token = new Token(Token::PD, c); break;
+    } else if (strchr("+-*/()=;<,", c)) {
+        switch (c) {
+            case '+': token = new Token(Token::PLUS, c);
+                break;
+            case '-': token = new Token(Token::MINUS, c);
+                break;
+            case '*': token = new Token(Token::MUL, c);
+                break;
+            case '/': token = new Token(Token::DIV, c);
+                break;
+            case '(': token = new Token(Token::PI, c);
+                break;
+            case ')': token = new Token(Token::PD, c);
+                break;
             case '=':
                 if (current + 1 < input.length() && input[current + 1] == '=') {
                     token = new Token(Token::EQ, "==", 0, 2);
@@ -82,14 +84,16 @@ Token* Scanner::nextToken() {
                     token = new Token(Token::LT, c);
                 }
                 break;
-            case ';': token = new Token(Token::PC, c); break;
+            case ';': token = new Token(Token::PC, c);
+                break;
+            case ',': token = new Token(Token::COMMA, c);
+                break;
             default:
                 cout << "No debería llegar acá" << endl;
                 token = new Token(Token::ERR, c);
         }
         current++;
-    }
-    else {
+    } else {
         token = new Token(Token::ERR, c);
         current++;
     }
@@ -101,11 +105,12 @@ void Scanner::reset() {
     current = 0;
 }
 
-Scanner::~Scanner() { }
+Scanner::~Scanner() {
+}
 
-void test_scanner(Scanner* scanner) {
-    Token* current;
-    cout << "Iniciando Scanner:" << endl<< endl;
+void test_scanner(Scanner *scanner) {
+    Token *current;
+    cout << "Iniciando Scanner:" << endl << endl;
     while ((current = scanner->nextToken())->type != Token::END) {
         if (current->type == Token::ERR) {
             cout << "Error en scanner - carácter inválido: " << current->text << endl;
