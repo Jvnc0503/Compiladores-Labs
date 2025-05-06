@@ -8,7 +8,9 @@
 #include "visitor.h"
 using namespace std;
 
-enum BinaryOp { PLUS_OP, MINUS_OP, MUL_OP, DIV_OP, LT_OP, LE_OP, EQ_OP };
+enum BinaryOp { PLUS_OP, MINUS_OP, MUL_OP, DIV_OP, LT_OP, LE_OP, EQ_OP, AND_OP, OR_OP };
+
+enum UnaryOp { NOT_OP };
 
 class Exp {
 public:
@@ -17,6 +19,8 @@ public:
     virtual ~Exp() = 0;
 
     static string binopToChar(BinaryOp op);
+
+    static string unopToChar(UnaryOp op);
 };
 
 class BinaryExp : public Exp {
@@ -29,6 +33,20 @@ public:
     int accept(Visitor *visitor);
 
     ~BinaryExp();
+};
+
+class UnaryExp : public Exp {
+public:
+    Exp *exp;
+    UnaryOp op;
+
+    UnaryExp(Exp *exp, UnaryOp op): exp(exp), op(op) {
+    }
+
+    int accept(Visitor *visitor);
+
+    ~UnaryExp() {
+    }
 };
 
 class NumberExp : public Exp {
@@ -140,8 +158,7 @@ public:
 
     int accept(Visitor *visitor);
 
-    ~ForStatement() {
-    }
+    ~ForStatement();
 };
 
 class Program {

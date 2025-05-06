@@ -85,21 +85,21 @@ Stm *Parser::parseStatement() {
             cout << "Error: se esperaba un '=' después del identificador." << endl;
             exit(1);
         }
-        e = parseCExp();
+        e = parseAExp();
         s = new AssignStatement(lex, e);
     } else if (match(Token::PRINT)) {
         if (!match(Token::PI)) {
             cout << "Error: se esperaba un '(' después de 'print'." << endl;
             exit(1);
         }
-        e = parseCExp();
+        e = parseAExp();
         if (!match(Token::PD)) {
             cout << "Error: se esperaba un ')' después de la expresión." << endl;
             exit(1);
         }
         s = new PrintStatement(e);
     } else if (match(Token::IF)) {
-        e = parseCExp();
+        e = parseAExp();
         if (!match(Token::THEN)) {
             cout << "Error: se esperaba 'then' después de la expresión." << endl;
             exit(1);
@@ -116,7 +116,7 @@ Stm *Parser::parseStatement() {
         }
         s = new IfStatement(e, then, els);
     } else if (match(Token::WHILE)) {
-        e = parseCExp();
+        e = parseAExp();
         if (!match(Token::DO)) {
             cout << "Error: se esperaba 'then' después de la expresión." << endl;
             exit(1);
@@ -132,15 +132,15 @@ Stm *Parser::parseStatement() {
             cout << "Error: se esperaba un identificador después de 'for'." << endl;
             exit(1);
         }
-        e = parseCExp();
+        e = parseAExp();
         if (!match(Token::COMMA)) {
             cout << "Error: se esperaba una coma después de la expresión." << endl;
         }
-        Exp *e2 = parseCExp();
+        Exp *e2 = parseAExp();
         if (!match(Token::COMMA)) {
             cout << "Error: se esperaba una coma después de la expresión." << endl;
         }
-        Exp *e3 = parseCExp();
+        Exp *e3 = parseAExp();
         if (!match(Token::PD)) {
             cout << "Error: se esperaba un paréntesis derecho." << endl;
         }
@@ -154,6 +154,33 @@ Stm *Parser::parseStatement() {
         exit(1);
     }
     return s;
+}
+
+Exp *Parser::parseAExp() {
+    Exp *left = parseBExp();
+    if (match(Token::AND) || match(Token::OR)) {
+        BinaryOp op;
+        if (previous->type == Token::AND) {
+            op = AND_OP;
+        } else if (previous->type == Token::OR) {
+            op = OR_OP;
+        }
+        Exp *right = parseBExp();
+        left = new BinaryExp(left, right, op);
+    }
+    return left;
+}
+
+Exp *Parser::parseBExp() {
+    if (match(Token::NOT)) {
+        UnaryOp op;
+        if (previous->type == Token::NOT) {
+            op = NOT_OP;
+        }
+        Exp *e = parseBExp();
+        return new UnaryExp(e, op);
+    }
+    return parseCExp();
 }
 
 Exp *Parser::parseCExp() {
@@ -212,32 +239,37 @@ Exp *Parser::parseFactor() {
         return new IdentifierExp(previous->text);
     }
     if (match(Token::PI)) {
-        e = parseCExp();
+        e = parseAExp();
         if (!match(Token::PD)) {
             cout << "Falta paréntesis derecho" << endl;
             exit(0);
         }
         return e;
     }
-    if (match(Token::IFEXP) && match(Token::PI)) {
-        e = parseCExp();
+    if (match(Token::IFEXP)) {
+        if (!match(Token::PI)) {
+            cout << "Error: se esperaba un paréntesis izquierdo." << endl;
+            exit(0);
+        }
+        e = parseAExp();
         if (!match(Token::COMMA)) {
             cout << "Error: se esperaba una coma después de la expresión." << endl;
             exit(0);
         }
-        Exp *e2 = parseCExp();
+        Exp *e2 = parseAExp();
         if (!match(Token::COMMA)) {
             cout << "Error: se esperaba una coma después de la expresión." << endl;
             exit(0);
         }
-        Exp *e3 = parseCExp();
+        Exp *e3 = parseAExp();
         if (!match(Token::PD)) {
             cout << "Error: se esperaba un paréntesis derecho." << endl;
             exit(0);
         }
         return new IfExp(e, e2, e3);
     }
-    cout << "Error: se esperaba un número, identificador o ifexpression." << endl;
+    cout << current->text;
+    cout << "Error: se esperaba un numero, identificador o ifexpression." << endl;
     exit(0);
 }
 

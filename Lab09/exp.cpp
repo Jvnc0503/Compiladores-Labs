@@ -5,6 +5,10 @@ using namespace std;
 BinaryExp::BinaryExp(Exp *l, Exp *r, BinaryOp op): left(l), right(r), op(op) {
 }
 
+int UnaryExp::accept(Visitor *visitor) {
+    return 0;
+}
+
 NumberExp::NumberExp(int v): value(v) {
 }
 
@@ -66,6 +70,15 @@ int ForStatement::accept(Visitor *visitor) {
     return 0;
 }
 
+ForStatement::~ForStatement() {
+    delete first;
+    delete second;
+    delete third;
+    for (const auto &s: body) {
+        delete s;
+    }
+}
+
 Program::Program() {
 }
 
@@ -99,7 +112,20 @@ string Exp::binopToChar(BinaryOp op) {
             break;
         case EQ_OP: c = "==";
             break;
+        case AND_OP: c = "and";
+            break;
+        case OR_OP: c = "or";
+            break;
         default: c = "$";
+    }
+    return c;
+}
+
+string Exp::unopToChar(UnaryOp op) {
+    string c;
+    switch (op) {
+        case NOT_OP: c = "not";
+            break;
     }
     return c;
 }

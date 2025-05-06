@@ -57,8 +57,7 @@ Token *Scanner::nextToken() {
             token = new Token(Token::AND, word, 0, word.length());
         } else if (word == "or") {
             token = new Token(Token::OR, word, 0, word.length());
-        }
-        else {
+        } else {
             token = new Token(Token::ID, word, 0, word.length());
         }
     } else if (strchr("+-*/()=;<,", c)) {
