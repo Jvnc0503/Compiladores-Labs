@@ -51,7 +51,14 @@ Token *Scanner::nextToken() {
             token = new Token(Token::ENDFOR, word, 0, word.length());
         } else if (word == "ifexp") {
             token = new Token(Token::IFEXP, word, 0, word.length());
-        } else {
+        } else if (word == "not") {
+            token = new Token(Token::NOT, word, 0, word.length());
+        } else if (word == "and") {
+            token = new Token(Token::AND, word, 0, word.length());
+        } else if (word == "or") {
+            token = new Token(Token::OR, word, 0, word.length());
+        }
+        else {
             token = new Token(Token::ID, word, 0, word.length());
         }
     } else if (strchr("+-*/()=;<,", c)) {

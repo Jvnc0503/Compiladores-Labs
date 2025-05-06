@@ -7,8 +7,7 @@ class Token {
 public:
     enum Type {
         PLUS, MINUS, MUL, DIV, NUM, ERR, PD, PI, END, ID, PRINT, ASSIGN, PC, LT, LE, EQ, IF, THEN, ELSE, ENDIF, WHILE,
-        DO,
-        ENDWHILE, FOR, ENDFOR, AND, OR, NOT, IFEXP, COMMA
+        DO, ENDWHILE, FOR, ENDFOR, AND, OR, NOT, IFEXP, COMMA
     };
 
     Type type;
