@@ -106,6 +106,21 @@ void PrintVisitor::visit(WhileStatement *stm) {
     cout << "endwhile";
 }
 
+void PrintVisitor::visit(ForStatement *stm) {
+    cout << "for (";
+    stm->first->accept(this);
+    cout << ", ";
+    stm->second->accept(this);
+    cout << ", ";
+    stm->third->accept(this);
+    cout << ")\n";
+    for (Stm *s: stm->body) {
+        s->accept(this);
+        cout << '\n';
+    }
+    cout << "endfor";
+}
+
 void PrintVisitor::imprimir(Program *program) {
     for (Stm *s: program->slist) {
         s->accept(this);
@@ -188,7 +203,18 @@ void EVALVisitor::visit(IfStatement *stm) {
 
 void EVALVisitor::visit(WhileStatement *stm) {
     while (stm->condition->accept(this)) {
-        for (auto &s: stm->body) {
+        for (const auto &s: stm->body) {
+            s->accept(this);
+        }
+    }
+}
+
+void EVALVisitor::visit(ForStatement *stm) {
+    int a = stm->first->accept(this);
+    int b = stm->second->accept(this);
+    int c = stm->third->accept(this);
+    for (int i = a; i <= b; i += c) {
+        for (const auto &s: stm->body) {
             s->accept(this);
         }
     }

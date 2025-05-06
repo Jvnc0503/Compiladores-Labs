@@ -127,6 +127,28 @@ Stm *Parser::parseStatement() {
             cout << "Error se esperaba 'endwhile al final de la declaración." << endl;
         }
         s = new WhileStatement(e, b);
+    } else if (match(Token::FOR)) {
+        if (!match(Token::PI)) {
+            cout << "Error: se esperaba un identificador después de 'for'." << endl;
+            exit(1);
+        }
+        e = parseCExp();
+        if (!match(Token::COMMA)) {
+            cout << "Error: se esperaba una coma después de la expresión." << endl;
+        }
+        Exp *e2 = parseCExp();
+        if (!match(Token::COMMA)) {
+            cout << "Error: se esperaba una coma después de la expresión." << endl;
+        }
+        Exp *e3 = parseCExp();
+        if (!match(Token::PD)) {
+            cout << "Error: se esperaba un paréntesis derecho." << endl;
+        }
+        list<Stm *> b = parseStmList();
+        if (!match(Token::ENDFOR)) {
+            cout << "Error: se esperaba 'endfor' al final de la declaración." << endl;
+        }
+        s = new ForStatement(e, e2, e3, b);
     } else {
         cout << "Error: Se esperaba un identificador o 'print', pero se encontró: " << *current << endl;
         exit(1);

@@ -3,6 +3,7 @@
 #include "exp.h"
 #include <list>
 
+class ForStatement;
 class IfExp;
 class WhileStatement;
 class BinaryExp;
@@ -31,6 +32,8 @@ public:
     virtual void visit(IfStatement *stm) = 0;
 
     virtual void visit(WhileStatement *stm) = 0;
+
+    virtual void visit(ForStatement *stm) = 0;
 };
 
 class PrintVisitor : public Visitor {
@@ -52,6 +55,8 @@ public:
     void visit(IfStatement *stm) override;
 
     void visit(WhileStatement *stm) override;
+
+    void visit(ForStatement *stm) override;
 };
 
 class EVALVisitor : public Visitor {
@@ -73,6 +78,8 @@ public:
     void visit(IfStatement *stm) override;
 
     void visit(WhileStatement *stm) override;
+
+    void visit(ForStatement *stm) override;
 };
 
 #endif // VISITOR_H

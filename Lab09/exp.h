@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include <list>
+#include <utility>
 #include "visitor.h"
 using namespace std;
 
@@ -119,12 +120,28 @@ public:
     Exp *condition;
     list<Stm *> body;
 
-    WhileStatement(Exp *c, list<Stm *> b): condition(c), body(b) {
+    WhileStatement(Exp *c, list<Stm *> b): condition(c), body(std::move(b)) {
     }
 
     int accept(Visitor *visitor);
 
-    ~WhileStatement();
+    ~WhileStatement() {
+    }
+};
+
+class ForStatement : public Stm {
+public:
+    Exp *first, *second, *third;
+    list<Stm *> body;
+
+    ForStatement(Exp *first, Exp *second, Exp *third, list<Stm *> b): first(first), second(second), third(third),
+                                                                      body(std::move(b)) {
+    }
+
+    int accept(Visitor *visitor);
+
+    ~ForStatement() {
+    }
 };
 
 class Program {

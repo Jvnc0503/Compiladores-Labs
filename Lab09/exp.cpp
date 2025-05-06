@@ -61,7 +61,9 @@ int WhileStatement::accept(Visitor *visitor) {
     return 0;
 }
 
-WhileStatement::~WhileStatement() {
+int ForStatement::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
 }
 
 Program::Program() {
