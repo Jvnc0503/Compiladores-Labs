@@ -41,6 +41,12 @@ int PrintVisitor::visit(BinaryExp *exp) {
     return 0;
 }
 
+int PrintVisitor::visit(UnaryExp *exp) {
+    cout << Exp::unopToChar(exp->op) << ' ';
+    exp->exp->accept(this);
+    return 0;
+}
+
 int PrintVisitor::visit(NumberExp *exp) {
     cout << exp->value;
     return 0;
@@ -152,6 +158,23 @@ int EVALVisitor::visit(BinaryExp *exp) {
         case LE_OP: result = v1 <= v2;
             break;
         case EQ_OP: result = v1 == v2;
+            break;
+        case AND_OP: result = v1 && v2;
+            break;
+        case OR_OP: result = v1 || v2;
+            break;
+        default:
+            cout << "Operador desconocido" << endl;
+            result = 0;
+    }
+    return result;
+}
+
+int EVALVisitor::visit(UnaryExp *exp) {
+    int result;
+    int v = exp->exp->accept(this);
+    switch (exp->op) {
+        case NOT_OP: result = !v;
             break;
         default:
             cout << "Operador desconocido" << endl;

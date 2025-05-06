@@ -6,7 +6,7 @@ BinaryExp::BinaryExp(Exp *l, Exp *r, BinaryOp op): left(l), right(r), op(op) {
 }
 
 int UnaryExp::accept(Visitor *visitor) {
-    return 0;
+    return visitor->visit(this);
 }
 
 NumberExp::NumberExp(int v): value(v) {

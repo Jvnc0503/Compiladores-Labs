@@ -3,6 +3,7 @@
 #include "exp.h"
 #include <list>
 
+class UnaryExp;
 class ForStatement;
 class IfExp;
 class WhileStatement;
@@ -11,13 +12,14 @@ class NumberExp;
 class IdentifierExp;
 class AssignStatement;
 class PrintStatement;
-
 class IfStatement;
 class Program;
 
 class Visitor {
 public:
     virtual int visit(BinaryExp *exp) = 0;
+
+    virtual int visit(UnaryExp *exp) = 0;
 
     virtual int visit(NumberExp *exp) = 0;
 
@@ -42,6 +44,8 @@ public:
 
     int visit(BinaryExp *exp) override;
 
+    int visit(UnaryExp *exp) override;
+
     int visit(NumberExp *exp) override;
 
     int visit(IdentifierExp *exp) override;
@@ -64,6 +68,8 @@ public:
     void ejecutar(Program *program);
 
     int visit(BinaryExp *exp) override;
+
+    int visit(UnaryExp *exp) override;
 
     int visit(NumberExp *exp) override;
 
