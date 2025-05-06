@@ -32,7 +32,7 @@ public:
 
     int accept(Visitor *visitor);
 
-    ~BinaryExp();
+    ~BinaryExp() override;
 };
 
 class UnaryExp : public Exp {
@@ -45,8 +45,7 @@ public:
 
     int accept(Visitor *visitor);
 
-    ~UnaryExp() {
-    }
+    ~UnaryExp() override;
 };
 
 class NumberExp : public Exp {
@@ -57,7 +56,7 @@ public:
 
     int accept(Visitor *visitor);
 
-    ~NumberExp();
+    ~NumberExp() override = default;
 };
 
 class IdentifierExp : public Exp {
@@ -68,7 +67,7 @@ public:
 
     int accept(Visitor *visitor);
 
-    ~IdentifierExp();
+    ~IdentifierExp() override = default;
 };
 
 class IfExp : public Exp {
@@ -82,11 +81,7 @@ public:
 
     int accept(Visitor *visitor);
 
-    ~IfExp() {
-        delete first;
-        delete second;
-        delete third;
-    }
+    ~IfExp() override;
 };
 
 class Stm {

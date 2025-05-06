@@ -23,14 +23,18 @@ BinaryExp::~BinaryExp() {
     delete right;
 }
 
-NumberExp::~NumberExp() {
-}
-
-IdentifierExp::~IdentifierExp() {
+UnaryExp::~UnaryExp() {
+    delete exp;
 }
 
 int IfExp::accept(Visitor *visitor) {
     return visitor->visit(this);
+}
+
+IfExp::~IfExp() {
+    delete first;
+    delete second;
+    delete third;
 }
 
 AssignStatement::AssignStatement(string id, Exp *e): id(id), rhs(e) {
