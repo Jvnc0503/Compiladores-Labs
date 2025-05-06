@@ -1,0 +1,4 @@
+x=ifexp(3<6,10,20)+10;
+y=ifexp(6<3,10,20)+10;
+print(x);
+print(y)
