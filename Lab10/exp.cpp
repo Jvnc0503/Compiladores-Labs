@@ -25,6 +25,10 @@ NumberExp::~NumberExp() {
 IdentifierExp::~IdentifierExp() {
 }
 
+int StringExp::accept(Visitor *visitor) {
+    return 0;
+}
+
 AssignStatement::AssignStatement(string id, Exp *e): id(id), rhs(e) {
 }
 
@@ -71,6 +75,28 @@ IfStatement::~IfStatement() {
     }
 }
 
+int ForRangeStatement::accept(Visitor *visitor) {
+    return 0;
+}
+
+ForRangeStatement::~ForRangeStatement() {
+    delete start;
+    delete end;
+    delete step;
+    for (const Stm *s: body) {
+        delete s;
+    }
+}
+
+int ForStringStatement::accept(Visitor *visitor) {
+}
+
+ForStringStatement::~ForStringStatement() {
+    for (const Stm *s: body) {
+        delete s;
+    }
+}
+
 Program::Program() {
 }
 
@@ -82,6 +108,10 @@ Program::~Program() {
     for (Stm *s: slist) {
         delete s;
     }
+}
+
+int IndexExp::accept(Visitor *visitor) {
+    return 0;
 }
 
 Stm::~Stm() {

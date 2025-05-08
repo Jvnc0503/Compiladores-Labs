@@ -72,9 +72,29 @@ public:
     StringExp(string v): value(std::move(v)) {
     }
 
-    int accept(Visitor *visitor);
+    int accept(Visitor *visitor) override;
 
-    ~StringExp() {
+    // string acceptString(Visitor *visitor);
+
+    ~StringExp() override {
+    }
+};
+
+class IndexExp : public Exp {
+public:
+    string id;
+    Exp *index;
+    string value;
+
+    IndexExp(string id, Exp *index): id(std::move(id)), index(index) {
+    }
+
+    int accept(Visitor *visitor) override;
+
+    // string acceptString(Visitor *visitor);
+
+    ~IndexExp() override {
+        delete index;
     }
 };
 
@@ -135,6 +155,38 @@ public:
     ~WhileStatement();
 };
 
+class ForRangeStatement : public Stm {
+public:
+    string id;
+    Exp *start;
+    Exp *end;
+    Exp *step;
+    list<Stm *> body;
+
+    ForRangeStatement(string id, Exp *start, Exp *end, Exp *step, list<Stm *> body): id(std::move(id)), start(start),
+        end(end),
+        step(step), body(std::move(body)) {
+    }
+
+    int accept(Visitor *visitor) override;
+
+    ~ForRangeStatement() override;
+};
+
+class ForStringStatement : public Stm {
+public:
+    string id;
+    string str;
+    list<Stm *> body;
+
+    ForStringStatement(string id, string str, list<Stm *> body): id(std::move(id)), str(std::move(str)),
+                                                                 body(std::move(body)) {
+    }
+
+    int accept(Visitor *visitor) override;
+
+    ~ForStringStatement() override;
+};
 
 class Program {
 public:

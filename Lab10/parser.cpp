@@ -128,6 +128,61 @@ Stm *Parser::parseStatement() {
             exit(1);
         }
         s = new IfStatement(e, then, els);
+    } else if (match(Token::FOR)) {
+        if (!match(Token::ID)) {
+            cout << "Error: se esperaba un identificador después de 'for'." << endl;
+            exit(1);
+        }
+        string id = previous->text;
+        if (!match(Token::IN)) {
+            cout << "Error: se esperaba 'in' después del identificador." << endl;
+            exit(1);
+        }
+        if (match(Token::RANGE)) {
+            if (!match(Token::PI)) {
+                cout << "Error: se esperaba un '(' después de 'range'." << endl;
+            }
+            Exp *start = parseCExp();
+            if (!match(Token::COMA)) {
+                cout << "Error: se esperaba una ',' después de la expresión de inicio." << endl;
+                exit(1);
+            }
+            Exp *end = parseCExp();
+            if (!match(Token::COMA)) {
+                cout << "Error: se esperaba un ',' después de la expresión de fin." << endl;
+                exit(1);
+            }
+            Exp *step = parseCExp();
+            if (!match(Token::PD)) {
+                cout << "Error: se esperaba un ')' después de la expresión de paso." << endl;
+                exit(1);
+            }
+            if (!match(Token::DO)) {
+                cout << "Error: se esperaba 'do' después de la expresión de paso." << endl;
+                exit(1);
+            }
+            list<Stm *> body = parseStmList();
+            if (!match(Token::ENDFOR)) {
+                cout << "Error: se esperaba 'endfor' al final de la declaración." << endl;
+                exit(1);
+            }
+            s = new ForRangeStatement(id, start, end, step, body);
+        } else if (match(Token::ID)) {
+            string str = previous->text;
+            if (!match(Token::DO)) {
+                cout << "Error: se esperaba 'do' después de la cadena." << endl;
+                exit(1);
+            }
+            list<Stm *> body = parseStmList();
+            if (!match(Token::ENDFOR)) {
+                cout << "Error: se esperaba 'endfor' al final de la declaración." << endl;
+                exit(1);
+            }
+            s = new ForStringStatement(id, str, body);
+        } else {
+            cout << "Error: se esperaba 'range' o una cadena después de 'for'." << endl;
+            exit(1);
+        }
     } else {
         cout << "Error: Se esperaba un identificador o 'print', pero se encontró: " << *current << endl;
         exit(1);
@@ -186,16 +241,27 @@ Exp *Parser::parseFactor() {
     Exp *e, *e1, *e2;
     if (match(Token::NUM)) {
         return new NumberExp(stoi(previous->text));
-    } else if (match(Token::ID)) {
+    }
+    if (match(Token::ID)) {
+        if (match(Token::LC)) {
+            Exp *index = parseCExp();
+            if (!match(Token::RC)) {
+                cout << "Error: se esperaba ']' después del índice." << endl;
+                exit(1);
+            }
+            return new IndexExp(previous->text, index);
+        }
         return new IdentifierExp(previous->text);
-    } else if (match(Token::PI)) {
+    }
+    if (match(Token::PI)) {
         e = parseCExp();
         if (!match(Token::PD)) {
             cout << "Falta paréntesis derecho" << endl;
             exit(0);
         }
         return e;
-    } else if (match(Token::IFEXP)) {
+    }
+    if (match(Token::IFEXP)) {
         match(Token::PI);
         e = parseCExp();
         match(Token::COMA);
@@ -205,12 +271,9 @@ Exp *Parser::parseFactor() {
         match(Token::PD);
         return new IFExp(e, e1, e2);
     }
+    if (match(Token::QUOTE)) {
+        return new StringExp(previous->text);
+    }
     cout << "Error: se esperaba un número o identificador." << endl;
     exit(0);
-}
-
-Exp *Parser::parseString() {
-
-
-
 }
