@@ -1,0 +1,8 @@
+x = "abc";
+print(x + "d");
+x = "repe";
+print(x[0]+x[1])
+print(x * 2);
+for i in range(1, 6, 2) do print(i) endfor;
+z = "Hola";
+for i in z do print(i) endfor;

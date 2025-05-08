@@ -1,0 +1,18 @@
+x = 1;
+
+while x<=5 do 
+   if x == 1  then print(10) endif;
+   if x == 2  then print(20) endif;
+   if x == 3  then print(30) endif;
+   if x == 4  then print(40) endif;
+   if x == 5  then print(50) else print(100) endif; 
+   x=x+1 
+endwhile;
+
+x=ifexp(3<6,10,20)+10;
+
+y=ifexp(6<3,10,20)+10;
+
+print(x);
+
+print(y)
