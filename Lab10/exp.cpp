@@ -89,6 +89,7 @@ ForRangeStatement::~ForRangeStatement() {
 }
 
 int ForStringStatement::accept(Visitor *visitor) {
+    return 0;
 }
 
 ForStringStatement::~ForStringStatement() {

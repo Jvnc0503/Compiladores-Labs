@@ -274,6 +274,6 @@ Exp *Parser::parseFactor() {
     if (match(Token::QUOTE)) {
         return new StringExp(previous->text);
     }
-    cout << "Error: se esperaba un número o identificador." << endl;
+    cout << "Error: se esperaba un número, identificador, if expression, string o index expression." << endl;
     exit(0);
 }
