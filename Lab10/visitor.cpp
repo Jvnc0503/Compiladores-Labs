@@ -4,6 +4,7 @@
 #include <unordered_map>
 using namespace std;
 unordered_map<std::string, int> memoria;
+unordered_map<std::string, std::string> memoriaStr;
 ///////////////////////////////////////////////////////////////////////////////////
 int BinaryExp::accept(Visitor *visitor) {
     return visitor->visit(this);
@@ -62,6 +63,14 @@ int PrintVisitor::visit(IdentifierExp *exp) {
 }
 
 int PrintVisitor::visit(StringExp *exp) {
+    cout << '"' << exp->value << '"';
+    return 0;
+}
+
+int PrintVisitor::visit(IndexExp *exp) {
+    cout << exp->id << '[';
+    exp->index->accept(this);
+    cout << "]";
     return 0;
 }
 
@@ -102,7 +111,7 @@ void PrintVisitor::imprimir(Program *program) {
         s->accept(this);
         cout << endl;
     }
-};
+}
 
 ///////////////////////////////////////////////////////////////////////////////////
 int EVALVisitor::visit(BinaryExp *exp) {
@@ -145,6 +154,11 @@ int EVALVisitor::visit(IdentifierExp *exp) {
 }
 
 int EVALVisitor::visit(StringExp *exp) {
+    return 0;
+}
+
+int EVALVisitor::visit(IndexExp *exp) {
+    string s = memoriaStr[exp->id];
     return 0;
 }
 
@@ -194,7 +208,6 @@ void EVALVisitor::visit(WhileStatement *stm) {
     }
 }
 
-
 int PrintVisitor::visit(IFExp *exp) {
     cout << "ifexp(";
     exp->e1->accept(this);
@@ -207,16 +220,29 @@ int PrintVisitor::visit(IFExp *exp) {
 }
 
 void PrintVisitor::visit(ForRangeStatement *stm) {
-    // cout << "for " << stm->id << " in range(";
-    // stm->start->accept(this);
-    // cout << ", ";
-    // stm->end->accept(this);
-    // cout << ", ";
-    // stm->step->accept(this);
-    // cout << ") do\n";
+    cout << "for " << stm->id << " in range(";
+    stm->start->accept(this);
+    cout << ", ";
+    stm->end->accept(this);
+    cout << ", ";
+    stm->step->accept(this);
+    cout << ") do\n";
+    for (const auto &s: stm->body) {
+        s->accept(this);
+        cout << '\n';
+    }
+    cout << "endfor";
 }
 
 void PrintVisitor::visit(ForStringStatement *stm) {
+    cout << "for " << stm->id << " in ";
+    stm->str->accept(this);
+    cout << " do\n";
+    for (const auto &s: stm->body) {
+        s->accept(this);
+        cout << '\n';
+    }
+    cout << "endfor";
 }
 
 int EVALVisitor::visit(IFExp *exp) {

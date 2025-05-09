@@ -93,14 +93,13 @@ Token *Scanner::nextToken() {
             case ';': token = new Token(Token::PC, c);
                 break;
             case '\"': {
-                string word;
+                const int start = current;
                 current++;
                 while (current < input.length() && input[current] != '\"') {
-                    word += input[current];
                     current++;
                 }
                 if (current < input.length()) {
-                    token = new Token(Token::QUOTE, word, 0, word.length());
+                    token = new Token(Token::QUOTE, input, start + 1, current - start - 1);
                 } else {
                     token = new Token(Token::ERR, c);
                 }

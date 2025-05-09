@@ -27,8 +27,6 @@ private:
 
     Exp *parseFactor();
 
-    Exp *parseString();
-
 public:
     Parser(Scanner *scanner);
 

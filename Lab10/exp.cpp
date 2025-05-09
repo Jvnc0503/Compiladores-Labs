@@ -26,7 +26,7 @@ IdentifierExp::~IdentifierExp() {
 }
 
 int StringExp::accept(Visitor *visitor) {
-    return 0;
+    return visitor->visit(this);
 }
 
 AssignStatement::AssignStatement(string id, Exp *e): id(id), rhs(e) {
@@ -76,6 +76,7 @@ IfStatement::~IfStatement() {
 }
 
 int ForRangeStatement::accept(Visitor *visitor) {
+    visitor->visit(this);
     return 0;
 }
 
@@ -89,6 +90,7 @@ ForRangeStatement::~ForRangeStatement() {
 }
 
 int ForStringStatement::accept(Visitor *visitor) {
+    visitor->visit(this);
     return 0;
 }
 
@@ -112,7 +114,7 @@ Program::~Program() {
 }
 
 int IndexExp::accept(Visitor *visitor) {
-    return 0;
+    return visitor->visit(this);
 }
 
 Stm::~Stm() {

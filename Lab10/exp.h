@@ -176,11 +176,11 @@ public:
 class ForStringStatement : public Stm {
 public:
     string id;
-    string str;
+    Exp *str;
     list<Stm *> body;
 
-    ForStringStatement(string id, string str, list<Stm *> body): id(std::move(id)), str(std::move(str)),
-                                                                 body(std::move(body)) {
+    ForStringStatement(string id, Exp *str, list<Stm *> body): id(std::move(id)), str(str),
+                                                               body(std::move(body)) {
     }
 
     int accept(Visitor *visitor) override;

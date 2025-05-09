@@ -167,8 +167,8 @@ Stm *Parser::parseStatement() {
                 exit(1);
             }
             s = new ForRangeStatement(id, start, end, step, body);
-        } else if (match(Token::ID)) {
-            string str = previous->text;
+        } else {
+            Exp *str = parseFactor();
             if (!match(Token::DO)) {
                 cout << "Error: se esperaba 'do' después de la cadena." << endl;
                 exit(1);
@@ -179,9 +179,6 @@ Stm *Parser::parseStatement() {
                 exit(1);
             }
             s = new ForStringStatement(id, str, body);
-        } else {
-            cout << "Error: se esperaba 'range' o una cadena después de 'for'." << endl;
-            exit(1);
         }
     } else {
         cout << "Error: Se esperaba un identificador o 'print', pero se encontró: " << *current << endl;
@@ -243,15 +240,16 @@ Exp *Parser::parseFactor() {
         return new NumberExp(stoi(previous->text));
     }
     if (match(Token::ID)) {
+        const string id = previous->text;
         if (match(Token::LC)) {
             Exp *index = parseCExp();
             if (!match(Token::RC)) {
                 cout << "Error: se esperaba ']' después del índice." << endl;
                 exit(1);
             }
-            return new IndexExp(previous->text, index);
+            return new IndexExp(id, index);
         }
-        return new IdentifierExp(previous->text);
+        return new IdentifierExp(id);
     }
     if (match(Token::PI)) {
         e = parseCExp();

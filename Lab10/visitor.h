@@ -3,6 +3,7 @@
 #include "exp.h"
 #include <list>
 
+class IndexExp;
 class ForStringStatement;
 class ForRangeStatement;
 class StringExp;
@@ -28,6 +29,8 @@ public:
 
     virtual int visit(StringExp *exp) = 0;
 
+    virtual int visit(IndexExp *exp) = 0;
+
     virtual void visit(AssignStatement *stm) = 0;
 
     virtual void visit(PrintStatement *stm) = 0;
@@ -52,6 +55,8 @@ public:
     int visit(IdentifierExp *exp) override;
 
     int visit(StringExp *exp) override;
+
+    int visit(IndexExp *exp) override;
 
     void visit(AssignStatement *stm) override;
 
@@ -79,6 +84,8 @@ public:
     int visit(IdentifierExp *exp) override;
 
     int visit(StringExp *exp) override;
+
+    int visit(IndexExp *exp) override;
 
     void visit(AssignStatement *stm) override;
 
