@@ -4,7 +4,6 @@
 #include <unordered_map>
 using namespace std;
 unordered_map<std::string, int> memoria;
-unordered_map<std::string, std::string> memoriaStr;
 ///////////////////////////////////////////////////////////////////////////////////
 int BinaryExp::accept(Visitor *visitor) {
     return visitor->visit(this);
@@ -254,6 +253,15 @@ int EVALVisitor::visit(IFExp *exp) {
 }
 
 void EVALVisitor::visit(ForRangeStatement *stm) {
+    memoria[stm->id] = stm->start->accept(this);
+    int end = stm->end->accept(this);
+    int step = stm->step->accept(this);
+    while (memoria[stm->id] <= end) {
+        for (Stm *s: stm->body) {
+            s->accept(this);
+        }
+        memoria[stm->id] += step;
+    }
 }
 
 void EVALVisitor::visit(ForStringStatement *stm) {
