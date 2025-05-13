@@ -8,6 +8,7 @@ if 5 < x then
     x = 5;
     y = 10;
     if (x + y < 10) then
+        var int y;
         print(x + y)
     else
         y = 1;

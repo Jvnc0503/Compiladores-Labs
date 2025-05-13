@@ -95,33 +95,45 @@ int PrintVisitor::visit(IdentifierExp *exp) {
 }
 
 void PrintVisitor::visit(AssignStatement *stm) {
+    printTabs();
     cout << stm->id << " = ";
     stm->rhs->accept(this);
     cout << ";";
 }
 
 void PrintVisitor::visit(PrintStatement *stm) {
+    printTabs();
     cout << "print(";
     stm->e->accept(this);
     cout << ");";
 }
 
 void PrintVisitor::visit(IfStatement *stm) {
+    printTabs();
     cout << "if ";
     stm->condition->accept(this);
-    cout << " then" << endl;
+    cout << " then\n";
+    tabs++;
     stm->then->accept(this);
+    tabs--;
     if (stm->els) {
+        printTabs();
         cout << "else" << endl;
+        tabs++;
         stm->els->accept(this);
+        tabs--;
     }
+    printTabs();
     cout << "endif";
+}
+
+void PrintVisitor::printTabs() const {
+    for (unsigned i = 0; i < tabs; i++) cout << "   ";
 }
 
 void PrintVisitor::imprimir(Program *program) {
     program->body->accept(this);
 };
-
 
 int PrintVisitor::visit(IFExp *pepito) {
     cout << "ifexp(";
@@ -135,14 +147,18 @@ int PrintVisitor::visit(IFExp *pepito) {
 }
 
 void PrintVisitor::visit(WhileStatement *stm) {
+    printTabs();
     cout << "while ";
     stm->condition->accept(this);
     cout << " do" << endl;
+    tabs++;
     stm->b->accept(this);
+    tabs--;
     cout << "endwhile";
 }
 
 void PrintVisitor::visit(ForStatement *stm) {
+    printTabs();
     cout << "for ";
     stm->start->accept(this);
     cout << " to ";
@@ -150,7 +166,9 @@ void PrintVisitor::visit(ForStatement *stm) {
     cout << " step ";
     stm->step->accept(this);
     cout << " do" << endl;
+    tabs++;
     stm->b->accept(this);
+    tabs--;
     cout << "endfor";
 }
 
@@ -166,6 +184,7 @@ void PrintVisitor::visit(VarDec *stm) {
 }
 
 void PrintVisitor::visit(VarDecList *stm) {
+    printTabs();
     for (auto i: stm->vardecs) {
         i->accept(this);
         cout << endl;
@@ -181,34 +200,57 @@ void PrintVisitor::visit(StatementList *stm) {
 
 void PrintVisitor::visit(Body *stm) {
     stm->vardecs->accept(this);
-    cout << endl;
     stm->slist->accept(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
 int EVALVisitor::visit(BinaryExp *exp) {
-    return 0;
+    int result;
+    const int v1 = exp->left->accept(this);
+    const int v2 = exp->right->accept(this);
+    switch (exp->op) {
+        case PLUS_OP: result = v1 + v2;
+            break;
+        case MINUS_OP: result = v1 - v2;
+            break;
+        case MUL_OP: result = v1 * v2;
+            break;
+        case DIV_OP: result = v1 / v2;
+            break;
+        case LT_OP: result = v1 < v2;
+            break;
+        case LE_OP: result = v1 <= v2;
+            break;
+        case EQ_OP: result = v1 == v2;
+            break;
+    }
+    return result;
 }
 
 int EVALVisitor::visit(NumberExp *exp) {
-    return 0;
+    return exp->value;
 }
 
 int EVALVisitor::visit(BoolExp *exp) {
-    return 0;
+    return exp->value;
 }
 
 int EVALVisitor::visit(IdentifierExp *exp) {
-    return 0;
+    return env.lookup(exp->name);
 }
 
 void EVALVisitor::visit(AssignStatement *stm) {
+    env.update(stm->id, stm->rhs->accept(this));
 }
 
 void EVALVisitor::visit(PrintStatement *stm) {
+    cout << stm->e->accept(this) << '\n';
 }
 
 void EVALVisitor::ejecutar(Program *program) {
+    env.add_level();
+    program->body->accept(this);
+    env.remove_level();
 }
 
 void EVALVisitor::visit(IfStatement *stm) {
@@ -217,7 +259,6 @@ void EVALVisitor::visit(IfStatement *stm) {
 void EVALVisitor::visit(WhileStatement *stm) {
 }
 
-
 int EVALVisitor::visit(IFExp *pepito) {
     return 0;
 }
@@ -225,17 +266,27 @@ int EVALVisitor::visit(IFExp *pepito) {
 void EVALVisitor::visit(ForStatement *stm) {
 }
 
-
 void EVALVisitor::visit(VarDec *stm) {
+    for (const auto &i: stm->vars) {
+        env.add_var(i, stm->type);
+    }
 }
 
 void EVALVisitor::visit(VarDecList *stm) {
+    for (const auto &i: stm->vardecs) {
+        i->accept(this);
+    }
 }
 
 void EVALVisitor::visit(StatementList *stm) {
+    for (const auto &i: stm->stms) {
+        i->accept(this);
+    }
 }
 
 void EVALVisitor::visit(Body *b) {
+    b->vardecs->accept(this);
+    b->slist->accept(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////

@@ -52,6 +52,10 @@ public:
 
 class PrintVisitor : public Visitor {
 public:
+    unsigned tabs = 0;
+
+    void printTabs() const;
+
     void imprimir(Program *program);
 
     int visit(IFExp *exp) override;
