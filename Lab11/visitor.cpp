@@ -184,15 +184,15 @@ void PrintVisitor::visit(VarDec *stm) {
 }
 
 void PrintVisitor::visit(VarDecList *stm) {
-    printTabs();
-    for (auto i: stm->vardecs) {
+    for (const auto i: stm->vardecs) {
+        printTabs();
         i->accept(this);
         cout << endl;
     }
 }
 
 void PrintVisitor::visit(StatementList *stm) {
-    for (auto i: stm->stms) {
+    for (const auto i: stm->stms) {
         i->accept(this);
         cout << endl;
     }
