@@ -248,15 +248,21 @@ void EVALVisitor::visit(PrintStatement *stm) {
 }
 
 void EVALVisitor::ejecutar(Program *program) {
-    env.add_level();
     program->body->accept(this);
-    env.remove_level();
 }
 
 void EVALVisitor::visit(IfStatement *stm) {
+    if (stm->condition->accept(this)) {
+        stm->then->accept(this);
+    } else {
+        stm->els->accept(this);
+    }
 }
 
 void EVALVisitor::visit(WhileStatement *stm) {
+    while (stm->condition->accept(this)) {
+        stm->b->accept(this);
+    }
 }
 
 int EVALVisitor::visit(IFExp *pepito) {
@@ -285,8 +291,10 @@ void EVALVisitor::visit(StatementList *stm) {
 }
 
 void EVALVisitor::visit(Body *b) {
+    env.add_level();
     b->vardecs->accept(this);
     b->slist->accept(this);
+    env.remove_level();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -296,10 +304,30 @@ void EVALVisitor::visit(Body *b) {
 //2 = bool
 
 void TypeVisitor::check(Program *program) {
+    program->body->accept(this);
 }
 
 int TypeVisitor::visit(BinaryExp *exp) {
-    return 0;
+    int result;
+    const int v1 = exp->left->accept(this);
+    const int v2 = exp->right->accept(this);
+    switch (exp->op) {
+        case PLUS_OP: result = 1;
+            break;
+        case MINUS_OP: result = 1;
+            break;
+        case MUL_OP: result = 1;
+            break;
+        case DIV_OP: result = 1;
+            break;
+        case LT_OP: result = 2;
+            break;
+        case LE_OP: result = 2;
+            break;
+        case EQ_OP: result = 2;
+            break;
+    }
+    return result;
 }
 
 int TypeVisitor::visit(NumberExp *exp) {
@@ -311,6 +339,10 @@ int TypeVisitor::visit(BoolExp *exp) {
 }
 
 int TypeVisitor::visit(IdentifierExp *exp) {
+    if (!env.check(exp->name)) {
+        cout << "Variable no declarada: " << exp->name << '\n';
+        exit(0);
+    }
     return 0;
 }
 
@@ -319,12 +351,31 @@ int TypeVisitor::visit(IFExp *exp) {
 }
 
 void TypeVisitor::visit(AssignStatement *stm) {
+    if (!env.check(stm->id)) {
+        cout << "Variable no declarada: " << stm->id << '\n';
+    }
+    string val_type;
+    switch (stm->rhs->accept(this)) {
+        case 1: val_type = "int";
+            break;
+        case 2: val_type = "bool";
+            break;
+    }
+    if (env.lookup_type(stm->id) != val_type) {
+        cout << "No coinciden los tipos de la asignacion\n";
+        exit(0);
+    }
 }
 
 void TypeVisitor::visit(PrintStatement *stm) {
+    stm->e->accept(this);
 }
 
 void TypeVisitor::visit(IfStatement *stm) {
+    if (stm->condition->accept(this) != 2) {
+        cout << "Error de tipo: se esperaba bool en la condicion del if\n";
+        exit(0);
+    }
 }
 
 void TypeVisitor::visit(WhileStatement *stm) {
@@ -334,13 +385,35 @@ void TypeVisitor::visit(ForStatement *stm) {
 }
 
 void TypeVisitor::visit(VarDec *stm) {
+    if (stm->type == "int") {
+        for (const auto &i: stm->vars) {
+            env.add_var(i, "int");
+        }
+    } else if (stm->type == "bool") {
+        for (const auto &i: stm->vars) {
+            env.add_var(i, "bool");
+        }
+    } else {
+        cout << "Tipo no reconocido\n";
+        exit(0);
+    }
 }
 
 void TypeVisitor::visit(VarDecList *stm) {
+    for (const auto &i: stm->vardecs) {
+        i->accept(this);
+    }
 }
 
 void TypeVisitor::visit(StatementList *stm) {
+    for (const auto &i: stm->stms) {
+        i->accept(this);
+    }
 }
 
 void TypeVisitor::visit(Body *b) {
+    env.add_level();
+    b->vardecs->accept(this);
+    b->slist->accept(this);
+    env.remove_level();
 }
