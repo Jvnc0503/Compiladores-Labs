@@ -3,134 +3,138 @@
 #include "visitor.h"
 #include <unordered_map>
 using namespace std;
+///////////////////////////////////////////////////////////////////////////////////
+int BinaryExp::accept(Visitor *visitor) {
+    return visitor->visit(this);
+}
+
+int IFExp::accept(Visitor *visitor) {
+    return visitor->visit(this);
+}
+
+int NumberExp::accept(Visitor *visitor) {
+    return visitor->visit(this);
+}
+
+int BoolExp::accept(Visitor *visitor) {
+    return visitor->visit(this);
+}
+
+int IdentifierExp::accept(Visitor *visitor) {
+    return visitor->visit(this);
+}
+
+int AssignStatement::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int PrintStatement::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int IfStatement::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int WhileStatement::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int ForStatement::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int VarDec::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int VarDecList::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int StatementList::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int Body::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
+}
 
 ///////////////////////////////////////////////////////////////////////////////////
-int BinaryExp::accept(Visitor* visitor) {
-    return visitor->visit(this);
-}
-int IFExp::accept(Visitor* visitor) {
-    return visitor->visit(this);
-}
-int NumberExp::accept(Visitor* visitor) {
-    return visitor->visit(this);
-}
 
-int BoolExp::accept(Visitor* visitor) {
-    return visitor->visit(this);
-}
-
-int IdentifierExp::accept(Visitor* visitor) {
-    return visitor->visit(this);
-}
-
-int AssignStatement::accept(Visitor* visitor) {
-    visitor->visit(this);
-    return 0;
-}
-
-int PrintStatement::accept(Visitor* visitor) {
-    visitor->visit(this);
-    return 0;
-}
-
-int IfStatement::accept(Visitor* visitor) {
-    visitor->visit(this);
-    return 0;
-}
-
-int WhileStatement::accept(Visitor* visitor) {
-    visitor->visit(this);
-    return 0;
-}
-int ForStatement::accept(Visitor* visitor) {
-    visitor->visit(this);
-    return 0;
-}
-
-int VarDec::accept(Visitor* visitor) {
-    visitor->visit(this);
-    return 0;
-}
-
-int VarDecList::accept(Visitor* visitor) {
-    visitor->visit(this);
-    return 0;
-}
-int StatementList::accept(Visitor* visitor) {
-    visitor->visit(this);
-    return 0;
-}
-int Body::accept(Visitor* visitor) {
-    visitor->visit(this);
-    return 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////////
-
-int PrintVisitor::visit(BinaryExp* exp) {
+int PrintVisitor::visit(BinaryExp *exp) {
     exp->left->accept(this);
     cout << ' ' << Exp::binopToChar(exp->op) << ' ';
     exp->right->accept(this);
     return 0;
 }
 
-int PrintVisitor::visit(NumberExp* exp) {
+int PrintVisitor::visit(NumberExp *exp) {
     cout << exp->value;
     return 0;
 }
 
-int PrintVisitor::visit(BoolExp* exp) {
-    if(exp->value) cout << "true";
+int PrintVisitor::visit(BoolExp *exp) {
+    if (exp->value) cout << "true";
     else cout << "false";
     return 0;
 }
 
-int PrintVisitor::visit(IdentifierExp* exp) {
+int PrintVisitor::visit(IdentifierExp *exp) {
     cout << exp->name;
     return 0;
 }
 
-void PrintVisitor::visit(AssignStatement* stm) {
+void PrintVisitor::visit(AssignStatement *stm) {
     cout << stm->id << " = ";
     stm->rhs->accept(this);
     cout << ";";
 }
 
-void PrintVisitor::visit(PrintStatement* stm) {
+void PrintVisitor::visit(PrintStatement *stm) {
     cout << "print(";
     stm->e->accept(this);
     cout << ");";
 }
 
-void PrintVisitor::visit(IfStatement* stm) {
+void PrintVisitor::visit(IfStatement *stm) {
     cout << "if ";
     stm->condition->accept(this);
     cout << " then" << endl;
     stm->then->accept(this);
-    if(stm->els){
+    if (stm->els) {
         cout << "else" << endl;
         stm->els->accept(this);
     }
     cout << "endif";
 }
 
-void PrintVisitor::imprimir(Program* program){
+void PrintVisitor::imprimir(Program *program) {
     program->body->accept(this);
 };
 
 
-int PrintVisitor::visit(IFExp* pepito) {
-    cout<< "ifexp(";
+int PrintVisitor::visit(IFExp *pepito) {
+    cout << "ifexp(";
     pepito->cond->accept(this);
-    cout<< ",";
+    cout << ",";
     pepito->left->accept(this);
-    cout<< ",";
+    cout << ",";
     pepito->right->accept(this);
-    cout << ")" ;
+    cout << ")";
     return 0;
 }
 
-void PrintVisitor::visit(WhileStatement* stm){
+void PrintVisitor::visit(WhileStatement *stm) {
     cout << "while ";
     stm->condition->accept(this);
     cout << " do" << endl;
@@ -138,7 +142,7 @@ void PrintVisitor::visit(WhileStatement* stm){
     cout << "endwhile";
 }
 
-void PrintVisitor::visit(ForStatement* stm){
+void PrintVisitor::visit(ForStatement *stm) {
     cout << "for ";
     stm->start->accept(this);
     cout << " to ";
@@ -150,89 +154,88 @@ void PrintVisitor::visit(ForStatement* stm){
     cout << "endfor";
 }
 
-void PrintVisitor::visit(VarDec* stm){
+void PrintVisitor::visit(VarDec *stm) {
     cout << "var ";
     cout << stm->type;
     cout << " ";
-    for(auto i: stm->vars){
+    for (auto i: stm->vars) {
         cout << i;
-        if(i != stm->vars.back()) cout << ", ";
+        if (i != stm->vars.back()) cout << ", ";
     }
     cout << ";";
 }
 
-void PrintVisitor::visit(VarDecList* stm){
-    for(auto i: stm->vardecs){
+void PrintVisitor::visit(VarDecList *stm) {
+    for (auto i: stm->vardecs) {
         i->accept(this);
         cout << endl;
     }
 }
 
-void PrintVisitor::visit(StatementList* stm){
-    for(auto i: stm->stms){
+void PrintVisitor::visit(StatementList *stm) {
+    for (auto i: stm->stms) {
         i->accept(this);
         cout << endl;
     }
 }
 
-void PrintVisitor::visit(Body* stm){
+void PrintVisitor::visit(Body *stm) {
     stm->vardecs->accept(this);
     cout << endl;
     stm->slist->accept(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-int EVALVisitor::visit(BinaryExp* exp) {
+int EVALVisitor::visit(BinaryExp *exp) {
     return 0;
 }
 
-int EVALVisitor::visit(NumberExp* exp) {
+int EVALVisitor::visit(NumberExp *exp) {
     return 0;
 }
 
-int EVALVisitor::visit(BoolExp* exp) {
+int EVALVisitor::visit(BoolExp *exp) {
     return 0;
 }
 
-int EVALVisitor::visit(IdentifierExp* exp) {
+int EVALVisitor::visit(IdentifierExp *exp) {
     return 0;
 }
 
-void EVALVisitor::visit(AssignStatement* stm) {
+void EVALVisitor::visit(AssignStatement *stm) {
 }
 
-void EVALVisitor::visit(PrintStatement* stm) {
+void EVALVisitor::visit(PrintStatement *stm) {
 }
 
-void EVALVisitor::ejecutar(Program* program){
+void EVALVisitor::ejecutar(Program *program) {
 }
 
-void EVALVisitor::visit(IfStatement* stm) {
+void EVALVisitor::visit(IfStatement *stm) {
 }
 
-void EVALVisitor::visit(WhileStatement* stm) {
+void EVALVisitor::visit(WhileStatement *stm) {
 }
 
 
-int EVALVisitor::visit(IFExp* pepito) {
+int EVALVisitor::visit(IFExp *pepito) {
     return 0;
 }
 
-void EVALVisitor::visit(ForStatement* stm){
+void EVALVisitor::visit(ForStatement *stm) {
 }
 
 
-
-void EVALVisitor::visit(VarDec* stm){
+void EVALVisitor::visit(VarDec *stm) {
 }
 
-void EVALVisitor::visit(VarDecList* stm){
+void EVALVisitor::visit(VarDecList *stm) {
 }
 
-void EVALVisitor::visit(StatementList* stm){
+void EVALVisitor::visit(StatementList *stm) {
 }
 
-void EVALVisitor::visit(Body* b){
+void EVALVisitor::visit(Body *b) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -241,52 +244,52 @@ void EVALVisitor::visit(Body* b){
 //1 = int
 //2 = bool
 
-void TypeVisitor::check(Program* program){
+void TypeVisitor::check(Program *program) {
 }
 
-int TypeVisitor::visit(BinaryExp* exp) {
+int TypeVisitor::visit(BinaryExp *exp) {
     return 0;
 }
 
-int TypeVisitor::visit(NumberExp* exp) {
+int TypeVisitor::visit(NumberExp *exp) {
     return 1;
 }
 
-int TypeVisitor::visit(BoolExp* exp) {
+int TypeVisitor::visit(BoolExp *exp) {
     return 2;
 }
 
-int TypeVisitor::visit(IdentifierExp* exp) {
+int TypeVisitor::visit(IdentifierExp *exp) {
     return 0;
 }
 
-int TypeVisitor::visit(IFExp* exp) {
+int TypeVisitor::visit(IFExp *exp) {
     return 0;
 }
 
-void TypeVisitor::visit(AssignStatement* stm) {
+void TypeVisitor::visit(AssignStatement *stm) {
 }
 
-void TypeVisitor::visit(PrintStatement* stm) {
+void TypeVisitor::visit(PrintStatement *stm) {
 }
 
-void TypeVisitor::visit(IfStatement* stm) {
+void TypeVisitor::visit(IfStatement *stm) {
 }
 
-void TypeVisitor::visit(WhileStatement* stm) {
+void TypeVisitor::visit(WhileStatement *stm) {
 }
 
-void TypeVisitor::visit(ForStatement* stm) {
+void TypeVisitor::visit(ForStatement *stm) {
 }
 
-void TypeVisitor::visit(VarDec* stm) {
+void TypeVisitor::visit(VarDec *stm) {
 }
 
-void TypeVisitor::visit(VarDecList* stm) {
+void TypeVisitor::visit(VarDecList *stm) {
 }
 
-void TypeVisitor::visit(StatementList* stm) {
+void TypeVisitor::visit(StatementList *stm) {
 }
 
-void TypeVisitor::visit(Body* b) {
+void TypeVisitor::visit(Body *b) {
 }

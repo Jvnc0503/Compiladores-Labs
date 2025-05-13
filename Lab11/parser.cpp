@@ -4,7 +4,6 @@
 #include "scanner.h"
 #include "exp.h"
 #include "parser.h"
-
 using namespace std;
 
 bool Parser::match(Token::Type ttype) {
@@ -22,7 +21,7 @@ bool Parser::check(Token::Type ttype) {
 
 bool Parser::advance() {
     if (!isAtEnd()) {
-        Token* temp = current;
+        Token *temp = current;
         if (previous) delete previous;
         current = scanner->nextToken();
         previous = temp;
@@ -39,7 +38,7 @@ bool Parser::isAtEnd() {
     return (current->type == Token::END);
 }
 
-Parser::Parser(Scanner* sc):scanner(sc) {
+Parser::Parser(Scanner *sc): scanner(sc) {
     previous = NULL;
     current = scanner->nextToken();
     if (current->type == Token::ERR) {
@@ -48,8 +47,8 @@ Parser::Parser(Scanner* sc):scanner(sc) {
     }
 }
 
-VarDec* Parser::parseVarDec() {
-    VarDec* vd = NULL;
+VarDec *Parser::parseVarDec() {
+    VarDec *vd = NULL;
     if (match(Token::VAR)) {
         if (!match(Token::ID)) {
             cout << "Error: se esperaba un identificador después de 'var'." << endl;
@@ -78,9 +77,9 @@ VarDec* Parser::parseVarDec() {
     return vd;
 }
 
-VarDecList* Parser::parseVarDecList() {
-    VarDecList* vdl = new VarDecList();
-    VarDec* aux;
+VarDecList *Parser::parseVarDecList() {
+    VarDecList *vdl = new VarDecList();
+    VarDec *aux;
     aux = parseVarDec();
     while (aux != NULL) {
         vdl->add(aux);
@@ -89,8 +88,8 @@ VarDecList* Parser::parseVarDecList() {
     return vdl;
 }
 
-StatementList* Parser::parseStatementList() {
-    StatementList* sl = new StatementList();
+StatementList *Parser::parseStatementList() {
+    StatementList *sl = new StatementList();
     sl->add(parseStatement());
     while (match(Token::PC)) {
         sl->add(parseStatement());
@@ -99,24 +98,24 @@ StatementList* Parser::parseStatementList() {
 }
 
 
-Body* Parser::parseBody() {
-    VarDecList* vdl = parseVarDecList();
-    StatementList* sl = parseStatementList();
+Body *Parser::parseBody() {
+    VarDecList *vdl = parseVarDecList();
+    StatementList *sl = parseStatementList();
     return new Body(vdl, sl);
 }
 
 
-Program* Parser::parseProgram() {
-    Body* b = parseBody();
+Program *Parser::parseProgram() {
+    Body *b = parseBody();
     return new Program(b);
 }
 
 
-Stm* Parser::parseStatement() {
-    Stm* s = NULL;
-    Exp* e = NULL;
-    Body* tb = NULL; //true case
-    Body* fb = NULL; //false case
+Stm *Parser::parseStatement() {
+    Stm *s = NULL;
+    Exp *e = NULL;
+    Body *tb = NULL; //true case
+    Body *fb = NULL; //false case
 
     if (current == NULL) {
         cout << "Error: Token actual es NULL" << endl;
@@ -143,14 +142,13 @@ Stm* Parser::parseStatement() {
             exit(1);
         }
         s = new PrintStatement(e);
-    }
-    else if (match(Token::IF)) {
+    } else if (match(Token::IF)) {
         e = parseCExp();
         if (!match(Token::THEN)) {
             cout << "Error: se esperaba 'then' después de la expresión." << endl;
             exit(1);
         }
-        
+
         tb = parseBody();
 
         if (match(Token::ELSE)) {
@@ -161,9 +159,7 @@ Stm* Parser::parseStatement() {
             exit(1);
         }
         s = new IfStatement(e, tb, fb);
-
-    }
-    else if (match(Token::WHILE)) {
+    } else if (match(Token::WHILE)) {
         e = parseCExp();
         if (!match(Token::DO)) {
             cout << "Error: se esperaba 'do' después de la expresión." << endl;
@@ -175,24 +171,22 @@ Stm* Parser::parseStatement() {
             exit(1);
         }
         s = new WhileStatement(e, tb);
-
-    }
-    else if(match(Token::FOR)){
-        if(!match(Token::PI)){
+    } else if (match(Token::FOR)) {
+        if (!match(Token::PI)) {
             cout << "Error: se esperaba '(' después de 'for'." << endl;
             exit(1);
         }
-        Exp* start = parseCExp();
+        Exp *start = parseCExp();
         if (!match(Token::COMA)) {
             cout << "Error: se esperaba ',' después de la expresión." << endl;
             exit(1);
         }
-        Exp* end = parseCExp();
+        Exp *end = parseCExp();
         if (!match(Token::COMA)) {
             cout << "Error: se esperaba ',' después de la expresión." << endl;
             exit(1);
         }
-        Exp* step = parseCExp();
+        Exp *step = parseCExp();
         if (!match(Token::PD)) {
             cout << "Error: se esperaba ')' después de la expresión." << endl;
             exit(1);
@@ -203,93 +197,84 @@ Stm* Parser::parseStatement() {
             exit(1);
         }
         s = new ForStatement(start, end, step, tb);
-    }
-    else {
+    } else {
         cout << "Error: Se esperaba un identificador o 'print', pero se encontró: " << *current << endl;
         exit(1);
     }
     return s;
 }
 
-Exp* Parser::parseCExp(){
-    Exp* left = parseExpression();
-    if (match(Token::LT) || match(Token::LE) || match(Token::EQ)){
+Exp *Parser::parseCExp() {
+    Exp *left = parseExpression();
+    if (match(Token::LT) || match(Token::LE) || match(Token::EQ)) {
         BinaryOp op;
-        if (previous->type == Token::LT){
+        if (previous->type == Token::LT) {
             op = LT_OP;
-        }
-        else if (previous->type == Token::LE){
+        } else if (previous->type == Token::LE) {
             op = LE_OP;
-        }
-        else if (previous->type == Token::EQ){
+        } else if (previous->type == Token::EQ) {
             op = EQ_OP;
         }
-        Exp* right = parseExpression();
+        Exp *right = parseExpression();
         left = new BinaryExp(left, right, op);
     }
     return left;
 }
 
-Exp* Parser::parseExpression() {
-    Exp* left = parseTerm();
+Exp *Parser::parseExpression() {
+    Exp *left = parseTerm();
     while (match(Token::PLUS) || match(Token::MINUS)) {
         BinaryOp op;
-        if (previous->type == Token::PLUS){
+        if (previous->type == Token::PLUS) {
             op = PLUS_OP;
-        }
-        else if (previous->type == Token::MINUS){
+        } else if (previous->type == Token::MINUS) {
             op = MINUS_OP;
         }
-        Exp* right = parseTerm();
+        Exp *right = parseTerm();
         left = new BinaryExp(left, right, op);
     }
     return left;
 }
 
-Exp* Parser::parseTerm() {
-    Exp* left = parseFactor();
+Exp *Parser::parseTerm() {
+    Exp *left = parseFactor();
     while (match(Token::MUL) || match(Token::DIV)) {
         BinaryOp op;
-        if (previous->type == Token::MUL){
+        if (previous->type == Token::MUL) {
             op = MUL_OP;
-        }
-        else if (previous->type == Token::DIV){
+        } else if (previous->type == Token::DIV) {
             op = DIV_OP;
         }
-        Exp* right = parseFactor();
+        Exp *right = parseFactor();
         left = new BinaryExp(left, right, op);
     }
     return left;
 }
 
-Exp* Parser::parseFactor() {
-    Exp* e;
-    Exp* e1;
-    Exp* e2;
-    if (match(Token::TRUE)){
+Exp *Parser::parseFactor() {
+    Exp *e;
+    Exp *e1;
+    Exp *e2;
+    if (match(Token::TRUE)) {
         return new BoolExp(1);
-    }else if (match(Token::FALSE)){
+    } else if (match(Token::FALSE)) {
         return new BoolExp(0);
-    }
-    else if (match(Token::NUM)) {
+    } else if (match(Token::NUM)) {
         return new NumberExp(stoi(previous->text));
-    }
-    else if (match(Token::ID)) {
+    } else if (match(Token::ID)) {
         return new IdentifierExp(previous->text);
-    }
-    else if (match(Token::IFEXP)) {
+    } else if (match(Token::IFEXP)) {
         match(Token::PI);
-        e=parseCExp();
-        match(Token::COMA);
-        e1=parseCExp();
-        match(Token::COMA);
-        e2=parseCExp();
-        match(Token::PD);
-        return new IFExp(e,e1,e2);
-    }
-    else if (match(Token::PI)){
         e = parseCExp();
-        if (!match(Token::PD)){
+        match(Token::COMA);
+        e1 = parseCExp();
+        match(Token::COMA);
+        e2 = parseCExp();
+        match(Token::PD);
+        return new IFExp(e, e1, e2);
+    } else if (match(Token::PI)) {
+        e = parseCExp();
+        if (!match(Token::PD)) {
             cout << "Falta paréntesis derecho" << endl;
             exit(0);
         }

@@ -1,6 +1,5 @@
 #ifndef ENV
 #define ENV
-
 #include <unordered_map>
 #include <list>
 #include <vector>
@@ -11,8 +10,8 @@ using namespace std;
 
 class Environment {
 private:
-    vector<unordered_map<string, int>> levels;  // Almacena valores de variables
-    vector<unordered_map<string, string>> type_levels;  // Almacena tipos de variables
+    vector<unordered_map<string, int> > levels; // Almacena valores de variables
+    vector<unordered_map<string, string> > type_levels; // Almacena tipos de variables
 
     // Busca el nivel en el que está una variable
     int search_rib(string var) {
@@ -27,7 +26,8 @@ private:
     }
 
 public:
-    Environment() {}
+    Environment() {
+    }
 
     void clear() {
         levels.clear();
@@ -37,7 +37,7 @@ public:
     // Añadir un nuevo nivel
     void add_level() {
         unordered_map<string, int> l;
-        unordered_map<string, string> t;  // Mapa para tipos
+        unordered_map<string, string> t; // Mapa para tipos
         levels.push_back(l);
         type_levels.push_back(t);
     }
@@ -54,7 +54,7 @@ public:
 
     // Añadir una variable sin valor inicial
     void add_var(string var, string type) {
-        levels.back()[var] = 0;  // Valor por defecto
+        levels.back()[var] = 0; // Valor por defecto
         type_levels.back()[var] = type;
     }
 
@@ -106,7 +106,8 @@ public:
     bool typecheck(string var, string expected_type) {
         string actual_type = lookup_type(var);
         if (actual_type != expected_type) {
-            cout << "Error de tipo: se esperaba " << expected_type << " pero se encontró " << actual_type << " para la variable " << var << endl;
+            cout << "Error de tipo: se esperaba " << expected_type << " pero se encontró " << actual_type <<
+                    " para la variable " << var << endl;
             return false;
         }
         return true;

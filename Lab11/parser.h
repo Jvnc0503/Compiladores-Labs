@@ -1,30 +1,43 @@
 #ifndef PARSER_H
 #define PARSER_H
-
 #include "scanner.h"
 #include "exp.h"
 
 class Parser {
 private:
-    Scanner* scanner;
+    Scanner *scanner;
     Token *current, *previous;
+
     bool match(Token::Type ttype);
+
     bool check(Token::Type ttype);
+
     bool advance();
+
     bool isAtEnd();
-    Exp* parseCExp();
-    Exp* parseExpression();
-    Exp* parseTerm();
-    Exp* parseFactor();
+
+    Exp *parseCExp();
+
+    Exp *parseExpression();
+
+    Exp *parseTerm();
+
+    Exp *parseFactor();
+
 public:
-    Parser(Scanner* scanner);
-    Program* parseProgram();
-    Stm* parseStatement();
-    StatementList* parseStatementList();
-    VarDec* parseVarDec();
-    VarDecList* parseVarDecList();
-    Body* parseBody();
-    
+    Parser(Scanner *scanner);
+
+    Program *parseProgram();
+
+    Stm *parseStatement();
+
+    StatementList *parseStatementList();
+
+    VarDec *parseVarDec();
+
+    VarDecList *parseVarDecList();
+
+    Body *parseBody();
 };
 
 #endif // PARSER_H

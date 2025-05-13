@@ -4,10 +4,9 @@
 #include "scanner.h"
 #include "parser.h"
 #include "visitor.h"
-
 using namespace std;
 
-int main(int argc, const char* argv[]) {
+int main(int argc, const char *argv[]) {
     if (argc != 2) {
         cout << "Numero incorrecto de argumentos. Uso: " << argv[0] << " <archivo_de_entrada>" << endl;
         exit(1);
@@ -34,9 +33,9 @@ int main(int argc, const char* argv[]) {
     cout << "Scanner exitoso" << endl;
     cout << endl;
     cout << "Iniciando parsing:" << endl;
-    Parser parser(&scanner); 
+    Parser parser(&scanner);
     try {
-        Program* program = parser.parseProgram();
+        Program *program = parser.parseProgram();
         cout << "Parsing exitoso" << endl << endl;
         cout << "Iniciando Visitor:" << endl;
         PrintVisitor printVisitor;
@@ -47,11 +46,11 @@ int main(int argc, const char* argv[]) {
         cout << endl;
         cout << "IMPRIMIR:" << endl;
         printVisitor.imprimir(program);
-        cout  << endl;
+        cout << endl;
         cout << "EJECUTAR:" << endl;
         evalVisitor.ejecutar(program);
         delete program;
-    } catch (const exception& e) {
+    } catch (const exception &e) {
         cout << "Error durante la ejecución: " << e.what() << endl;
         return 1;
     }
