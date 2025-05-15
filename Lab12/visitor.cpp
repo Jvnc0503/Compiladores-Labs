@@ -198,57 +198,175 @@ void PrintVisitor::visit(Body *stm) {
 
 ///////////////////////////////////////////////////////////////////////////////////
 ImpValue EVALVisitor::visit(BinaryExp *exp) {
-    return ImpValue();
+    ImpValue result(exp->type);
+    const ImpValue left = exp->left->accept(this);
+    const ImpValue right = exp->right->accept(this);
+    switch (exp->op) {
+        case PLUS_OP:
+            result.int_value = left.int_value + right.int_value;
+            break;
+        case MINUS_OP:
+            result.int_value = left.int_value - right.int_value;
+            break;
+        case MUL_OP:
+            result.int_value = left.int_value * right.int_value;
+            break;
+        case DIV_OP:
+            result.int_value = left.int_value / right.int_value;
+            break;
+        case AND_OP:
+            result.bool_value = left.bool_value && right.bool_value;
+            break;
+        case OR_OP:
+            result.bool_value = left.bool_value || right.bool_value;
+            break;
+        default:
+            cout << "Error: operador no soportado en la expresión binaria\n";
+            exit(1);
+    }
+    return result;
 }
 
 ImpValue EVALVisitor::visit(UnaryExp *exp) {
-    return ImpValue();
+    ImpValue result = exp->exp->accept(this);
+    result.type = exp->type;
+    switch (exp->op) {
+        case NOT_OP:
+            result.bool_value = !result.bool_value;
+            break;
+        default:
+            cout << "Error: operador no soportado en la expresión unaria\n";
+            exit(1);
+    }
 }
 
 ImpValue EVALVisitor::visit(NumberExp *exp) {
-    return ImpValue();
+    return ImpValue("int", exp->value);
 }
 
 ImpValue EVALVisitor::visit(BoolExp *exp) {
-    return ImpValue();
+    return ImpValue("bool", exp->value);
 }
 
 ImpValue EVALVisitor::visit(IdentifierExp *exp) {
-    return ImpValue();
+    if (!env.check(exp->name)) {
+        cout << "Error: variable no declarada: " << exp->name << '\n';
+        exit(1);
+    }
+    const string type = env.lookup_type(exp->name);
+    if (type == "int") {
+        return ImpValue("int", env.lookup(exp->name));
+    }
+    if (type == "bool") {
+        return ImpValue("bool", 0, env.lookup(exp->name));
+    }
+    cout << "Error: tipo de variable no soportado: " << exp->name << '\n';
+    exit(1);
 }
 
 void EVALVisitor::visit(AssignStatement *stm) {
+    if (!env.check(stm->id)) {
+        cout << "Error: variable no declarada: " << stm->id << '\n';
+        exit(1);
+    }
+    ImpValue result = stm->rhs->accept(this);
+    if (result.type == "int") {
+        env.update(stm->id, result.int_value);
+    } else if (result.type == "bool") {
+        env.update(stm->id, result.bool_value);
+    } else {
+        cout << "Error: tipo de variable no soportado: " << stm->id << '\n';
+        exit(1);
+    }
 }
 
 void EVALVisitor::visit(PrintStatement *stm) {
+    ImpValue result = stm->e->accept(this);
+    if (result.type == "int") {
+        cout << result.int_value << '\n';
+    } else if (result.type == "bool") {
+        cout << (result.bool_value ? "true" : "false") << '\n';
+    } else {
+        cout << "Error: tipo de variable no soportado en print\n";
+        exit(1);
+    }
 }
 
 void EVALVisitor::ejecutar(Program *program) {
+    program->body->accept(this);
 }
 
 void EVALVisitor::visit(IfStatement *stm) {
+    if (stm->condition->accept(this).bool_value) {
+        stm->then->accept(this);
+    } else {
+        stm->els->accept(this);
+    }
 }
 
 void EVALVisitor::visit(WhileStatement *stm) {
+    while (stm->condition->accept(this).bool_value) {
+        stm->b->accept(this);
+    }
 }
 
 ImpValue EVALVisitor::visit(IFExp *pepito) {
-    return ImpValue();
+    ImpValue condition = pepito->cond->accept(this);
+    ImpValue left = pepito->left->accept(this);
+    ImpValue right = pepito->right->accept(this);
+    ImpValue result(left.type);
+    if (condition.bool_value) {
+        if (left.type == "int") {
+            result.int_value = left.int_value;
+        } else if (left.type == "bool") {
+            result.bool_value = left.bool_value;
+        }
+    } else {
+        if (right.type == "int") {
+            result.int_value = right.int_value;
+        } else if (right.type == "bool") {
+            result.bool_value = right.bool_value;
+        }
+    }
+    return result;
 }
 
 void EVALVisitor::visit(ForStatement *stm) {
+    ImpValue start = stm->start->accept(this);
+    ImpValue end = stm->end->accept(this);
+    ImpValue step = stm->step->accept(this);
+    env.add_level();
+    env.add_var(stm->id, start.int_value, "int");
+    while (env.lookup(stm->id) < end.int_value) {
+        stm->b->accept(this);
+        env.update(stm->id, env.lookup(stm->id) + step.int_value);
+    }
+    env.remove_level();
 }
 
 void EVALVisitor::visit(VarDec *stm) {
+    for (const auto &i: stm->vars) {
+        env.add_var(i, stm->type);
+    }
 }
 
 void EVALVisitor::visit(VarDecList *stm) {
+    for (const auto &i: stm->vardecs) {
+        i->accept(this);
+    }
 }
 
 void EVALVisitor::visit(StatementList *stm) {
+    for (const auto &i: stm->stms) {
+        i->accept(this);
+    }
 }
 
 void EVALVisitor::visit(Body *b) {
+    env.add_level();
+    b->vardecs->accept(this);
+    b->slist->accept(this);
+    env.remove_level();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -297,11 +415,11 @@ ImpValue TypeVisitor::visit(UnaryExp *exp) {
 }
 
 ImpValue TypeVisitor::visit(NumberExp *exp) {
-    return ImpValue("int");
+    return {"int"};
 }
 
 ImpValue TypeVisitor::visit(BoolExp *exp) {
-    return ImpValue("bool");
+    return {"bool"};
 }
 
 ImpValue TypeVisitor::visit(IdentifierExp *exp) {
