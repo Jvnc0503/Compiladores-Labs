@@ -310,7 +310,7 @@ ImpValue TypeVisitor::visit(IdentifierExp *exp) {
         exit(1);
     }
     string type = env.lookup_type(exp->name);
-    return ImpValue(type);
+    return {type};
 }
 
 ImpValue TypeVisitor::visit(IFExp *exp) {
@@ -325,7 +325,7 @@ ImpValue TypeVisitor::visit(IFExp *exp) {
         cout << "Error: tipos incompatibles en la expresión if\n";
         exit(1);
     }
-    return ImpValue(right_type);
+    return {right_type};
 }
 
 void TypeVisitor::visit(AssignStatement *stm) {
