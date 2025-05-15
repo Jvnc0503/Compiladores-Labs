@@ -238,6 +238,7 @@ ImpValue EVALVisitor::visit(UnaryExp *exp) {
             cout << "Error: operador no soportado en la expresión unaria\n";
             exit(1);
     }
+    return result;
 }
 
 ImpValue EVALVisitor::visit(NumberExp *exp) {
@@ -245,7 +246,7 @@ ImpValue EVALVisitor::visit(NumberExp *exp) {
 }
 
 ImpValue EVALVisitor::visit(BoolExp *exp) {
-    return ImpValue("bool", exp->value);
+    return ImpValue("bool", 0, exp->value);
 }
 
 ImpValue EVALVisitor::visit(IdentifierExp *exp) {
