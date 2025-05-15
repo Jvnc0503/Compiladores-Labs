@@ -3,6 +3,7 @@
 #include "exp.h"
 #include "environment.h"
 #include <list>
+class UnaryExp;
 class BinaryExp;
 class NumberExp;
 class BoolExp;
@@ -25,6 +26,8 @@ public:
     virtual ImpValue visit(IFExp *exp) = 0;
 
     virtual ImpValue visit(BinaryExp *exp) = 0;
+
+    virtual ImpValue visit(UnaryExp *exp) = 0;
 
     virtual ImpValue visit(NumberExp *exp) = 0;
 
@@ -58,6 +61,8 @@ public:
     ImpValue visit(IFExp *exp) override;
 
     ImpValue visit(BinaryExp *exp) override;
+
+    ImpValue visit(UnaryExp *exp) override;
 
     ImpValue visit(NumberExp *exp) override;
 
@@ -94,6 +99,8 @@ public:
 
     ImpValue visit(BinaryExp *exp) override;
 
+    ImpValue visit(UnaryExp *exp) override;
+
     ImpValue visit(NumberExp *exp) override;
 
     ImpValue visit(BoolExp *exp) override;
@@ -128,6 +135,8 @@ public:
     ImpValue visit(IFExp *exp) override;
 
     ImpValue visit(BinaryExp *exp) override;
+
+    ImpValue visit(UnaryExp *exp) override;
 
     ImpValue visit(NumberExp *exp) override;
 

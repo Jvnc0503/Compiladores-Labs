@@ -10,7 +10,7 @@ ImpValue BinaryExp::accept(Visitor *visitor) {
 }
 
 ImpValue UnaryExp::accept(Visitor *visitor) {
-    return ImpValue();
+    return visitor->visit(this);
 }
 
 ImpValue IFExp::accept(Visitor *visitor) {
@@ -83,6 +83,12 @@ ImpValue PrintVisitor::visit(BinaryExp *exp) {
     return ImpValue();
 }
 
+ImpValue PrintVisitor::visit(UnaryExp *exp) {
+    cout << Exp::unaryopToChar(exp->op) << ' ';
+    exp->exp->accept(this);
+    return ImpValue();
+}
+
 ImpValue PrintVisitor::visit(NumberExp *exp) {
     cout << exp->value;
     return ImpValue();
@@ -148,13 +154,13 @@ void PrintVisitor::visit(WhileStatement *stm) {
 }
 
 void PrintVisitor::visit(ForStatement *stm) {
-    cout << "for ";
+    cout << "for " << stm->id << " in range(";
     stm->start->accept(this);
-    cout << " to ";
+    cout << ", ";
     stm->end->accept(this);
-    cout << " step ";
+    cout << ", ";
     stm->step->accept(this);
-    cout << " do" << endl;
+    cout << ")";
     stm->b->accept(this);
     cout << "endfor";
 }
@@ -195,6 +201,10 @@ ImpValue EVALVisitor::visit(BinaryExp *exp) {
     return ImpValue();
 }
 
+ImpValue EVALVisitor::visit(UnaryExp *exp) {
+    return ImpValue();
+}
+
 ImpValue EVALVisitor::visit(NumberExp *exp) {
     return ImpValue();
 }
@@ -222,14 +232,12 @@ void EVALVisitor::visit(IfStatement *stm) {
 void EVALVisitor::visit(WhileStatement *stm) {
 }
 
-
 ImpValue EVALVisitor::visit(IFExp *pepito) {
     return ImpValue();
 }
 
 void EVALVisitor::visit(ForStatement *stm) {
 }
-
 
 void EVALVisitor::visit(VarDec *stm) {
 }
@@ -253,6 +261,10 @@ void TypeVisitor::check(Program *program) {
 }
 
 ImpValue TypeVisitor::visit(BinaryExp *exp) {
+    return ImpValue();
+}
+
+ImpValue TypeVisitor::visit(UnaryExp *exp) {
     return ImpValue();
 }
 
