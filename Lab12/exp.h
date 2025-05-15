@@ -14,7 +14,7 @@ class Body;
 
 class ImpValue {
 public:
-    ImpValue(string tipo, int valor, bool bol) {
+    ImpValue(string tipo, int valor = 0, bool bol = false) {
         type = tipo;
         int_value = valor;
         bool_value = bol;

@@ -258,55 +258,149 @@ void EVALVisitor::visit(Body *b) {
 //2 = bool
 
 void TypeVisitor::check(Program *program) {
+    program->body->accept(this);
 }
 
 ImpValue TypeVisitor::visit(BinaryExp *exp) {
-    return ImpValue();
+    string left_type = exp->left->accept(this).type;
+    string right_type = exp->right->accept(this).type;
+    string op_type = exp->type;
+    if (left_type != right_type) {
+        cout << "Error: tipos incompatibles en la expresión binaria\n";
+        exit(1);
+    }
+    if (left_type != op_type) {
+        cout << "Error: tipo incompatible en la expresión binaria\n";
+        exit(1);
+    }
+    ImpValue result;
+    if (op_type == "bool") {
+        result.type = "bool";
+    } else if (op_type == "int") {
+        result.type = "int";
+    }
+    return result;
 }
 
 ImpValue TypeVisitor::visit(UnaryExp *exp) {
-    return ImpValue();
+    string exp_type = exp->exp->accept(this).type;
+    string op_type = exp->type;
+    if (exp_type != op_type) {
+        cout << "Error: tipo incompatible en la expresión unaria\n";
+        exit(1);
+    }
+    ImpValue result;
+    if (op_type == "bool") {
+        result.type = "bool";
+    }
+    return result;
 }
 
 ImpValue TypeVisitor::visit(NumberExp *exp) {
-    return ImpValue();
+    return ImpValue("int");
 }
 
 ImpValue TypeVisitor::visit(BoolExp *exp) {
-    return ImpValue();
+    return ImpValue("bool");
 }
 
 ImpValue TypeVisitor::visit(IdentifierExp *exp) {
-    return ImpValue();
+    if (!env.check(exp->name)) {
+        cout << "Error: variable no declarada: " << exp->name << '\n';
+        exit(1);
+    }
+    string type = env.lookup_type(exp->name);
+    return ImpValue(type);
 }
 
 ImpValue TypeVisitor::visit(IFExp *exp) {
-    return ImpValue();
+    string exp_type = exp->cond->accept(this).type;
+    if (exp_type != "bool") {
+        cout << "Error: tipo incompatible en la expresión condicional\n";
+        exit(1);
+    }
+    string right_type = exp->right->accept(this).type;
+    string left_type = exp->left->accept(this).type;
+    if (right_type != left_type) {
+        cout << "Error: tipos incompatibles en la expresión if\n";
+        exit(1);
+    }
+    return ImpValue(right_type);
 }
 
 void TypeVisitor::visit(AssignStatement *stm) {
+    if (!env.check(stm->id)) {
+        cout << "Error: variable no declarada: " << stm->id << '\n';
+        exit(1);
+    }
+    string var_type = env.lookup_type(stm->id);
+    string exp_type = stm->rhs->accept(this).type;
+    if (var_type != exp_type) {
+        cout << "Error: tipo incompatible en la asignación\n";
+        exit(1);
+    }
 }
 
 void TypeVisitor::visit(PrintStatement *stm) {
+    stm->e->accept(this);
 }
 
 void TypeVisitor::visit(IfStatement *stm) {
+    string cond_type = stm->condition->accept(this).type;
+    if (cond_type != "bool") {
+        cout << "Error: tipo incompatible en la condición del if\n";
+        exit(1);
+    }
 }
 
 void TypeVisitor::visit(WhileStatement *stm) {
+    string cond_type = stm->condition->accept(this).type;
+    if (cond_type != "bool") {
+        cout << "Error: tipo incompatible en la condición del while\n";
+        exit(1);
+    }
+    stm->b->accept(this);
 }
 
 void TypeVisitor::visit(ForStatement *stm) {
+    string start_type = stm->start->accept(this).type;
+    string end_type = stm->end->accept(this).type;
+    string step_type = stm->step->accept(this).type;
+    if (start_type != "int" || end_type != "int" || step_type != "int") {
+        cout << "Error: tipos incompatibles en el for\n";
+        exit(1);
+    }
+    env.add_level();
+    env.add_var(stm->id, 0, "int");
+    stm->b->accept(this);
+    env.remove_level();
 }
 
 void TypeVisitor::visit(VarDec *stm) {
+    for (const auto &i: stm->vars) {
+        if (env.check(i)) {
+            cout << "Error: variable ya declarada: " << i << '\n';
+            exit(1);
+        }
+        env.add_var(i, 0, stm->type);
+    }
 }
 
 void TypeVisitor::visit(VarDecList *stm) {
+    for (const auto &i: stm->vardecs) {
+        i->accept(this);
+    }
 }
 
 void TypeVisitor::visit(StatementList *stm) {
+    for (const auto &i: stm->stms) {
+        i->accept(this);
+    }
 }
 
 void TypeVisitor::visit(Body *b) {
+    env.add_level();
+    b->vardecs->accept(this);
+    b->slist->accept(this);
+    env.remove_level();
 }
