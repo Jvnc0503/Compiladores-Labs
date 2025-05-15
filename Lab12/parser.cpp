@@ -137,21 +137,21 @@ Stm *Parser::parseStatement() {
             cout << "Error: se esperaba un '=' después del identificador." << endl;
             exit(1);
         }
-        e = parseCExp();
+        e = parseBExp();
         s = new AssignStatement(lex, e);
     } else if (match(Token::PRINT)) {
         if (!match(Token::PI)) {
             cout << "Error: se esperaba un '(' después de 'print'." << endl;
             exit(1);
         }
-        e = parseCExp();
+        e = parseBExp();
         if (!match(Token::PD)) {
             cout << "Error: se esperaba un ')' después de la expresión." << endl;
             exit(1);
         }
         s = new PrintStatement(e);
     } else if (match(Token::IF)) {
-        e = parseCExp();
+        e = parseBExp();
         if (!match(Token::THEN)) {
             cout << "Error: se esperaba 'then' después de la expresión." << endl;
             exit(1);
@@ -168,7 +168,7 @@ Stm *Parser::parseStatement() {
         }
         s = new IfStatement(e, tb, fb);
     } else if (match(Token::WHILE)) {
-        e = parseCExp();
+        e = parseBExp();
         if (!match(Token::DO)) {
             cout << "Error: se esperaba 'do' después de la expresión." << endl;
             exit(1);
@@ -197,17 +197,17 @@ Stm *Parser::parseStatement() {
             cout << "Error: se esperaba '(' después de 'for'." << endl;
             exit(1);
         }
-        Exp *start = parseCExp();
+        Exp *start = parseBExp();
         if (!match(Token::COMA)) {
             cout << "Error: se esperaba ',' después de la expresión." << endl;
             exit(1);
         }
-        Exp *end = parseCExp();
+        Exp *end = parseBExp();
         if (!match(Token::COMA)) {
             cout << "Error: se esperaba ',' después de la expresión." << endl;
             exit(1);
         }
-        Exp *step = parseCExp();
+        Exp *step = parseBExp();
         if (!match(Token::PD)) {
             cout << "Error: se esperaba ')' después de la expresión." << endl;
             exit(1);
@@ -223,6 +223,33 @@ Stm *Parser::parseStatement() {
         exit(1);
     }
     return s;
+}
+
+Exp *Parser::parseAExp() {
+    Exp *left = parseBExp();
+    if (match(Token::AND) || match(Token::OR)) {
+        BinaryOp op;
+        if (previous->type == Token::AND) {
+            op = AND_OP;
+        } else if (previous->type == Token::OR) {
+            op = OR_OP;
+        }
+        Exp *right = parseBExp();
+        left = new BinaryExp(left, right, op);
+    }
+    return left;
+}
+
+Exp *Parser::parseBExp() {
+    if (match(Token::NOT)) {
+        UnaryOp op;
+        if (previous->type == Token::NOT) {
+            op = NOT_OP;
+        }
+        Exp *e = parseCExp();
+        return new UnaryExp(e, op);
+    }
+    return parseCExp();
 }
 
 Exp *Parser::parseCExp() {

@@ -9,6 +9,10 @@ ImpValue BinaryExp::accept(Visitor *visitor) {
     return visitor->visit(this);
 }
 
+ImpValue UnaryExp::accept(Visitor *visitor) {
+    return ImpValue();
+}
+
 ImpValue IFExp::accept(Visitor *visitor) {
     return visitor->visit(this);
 }

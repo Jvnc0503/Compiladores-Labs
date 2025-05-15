@@ -18,6 +18,10 @@ private:
 
     list<Stm *> parseStmList();
 
+    Exp *parseAExp();
+
+    Exp *parseBExp();
+
     Exp *parseCExp();
 
     Exp *parseExpression();

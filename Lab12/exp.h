@@ -6,7 +6,9 @@
 #include "visitor.h"
 using namespace std;
 
-enum BinaryOp { PLUS_OP, MINUS_OP, MUL_OP, DIV_OP, LT_OP, LE_OP, EQ_OP, AND_OP, OR_OP, NOT_OP };
+enum BinaryOp { PLUS_OP, MINUS_OP, MUL_OP, DIV_OP, LT_OP, LE_OP, EQ_OP, AND_OP, OR_OP };
+
+enum UnaryOp { NOT_OP };
 
 class Body;
 
@@ -35,6 +37,8 @@ public:
     virtual ~Exp() = 0;
 
     static string binopToChar(BinaryOp op);
+
+    static string unaryopToChar(UnaryOp op);
 };
 
 class IFExp : public Exp {
@@ -59,6 +63,19 @@ public:
     ImpValue accept(Visitor *visitor);
 
     ~BinaryExp();
+};
+
+class UnaryExp : public Exp {
+public:
+    Exp *exp;
+    string type;
+    UnaryOp op;
+
+    UnaryExp(Exp *exp, UnaryOp op);
+
+    ImpValue accept(Visitor *visitor);
+
+    ~UnaryExp();
 };
 
 class NumberExp : public Exp {
