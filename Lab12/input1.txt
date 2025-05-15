@@ -1,0 +1,4 @@
+var int x,y;
+x = 5;
+y = 4;
+print(x+y)
