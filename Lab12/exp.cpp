@@ -8,7 +8,7 @@ IFExp::IFExp(Exp *cond, Exp *l, Exp *r): cond(cond), left(l), right(r) {
 BinaryExp::BinaryExp(Exp *l, Exp *r, BinaryOp op): left(l), right(r), op(op) {
     if (op == PLUS_OP || op == MINUS_OP || op == MUL_OP || op == DIV_OP) {
         type = "int";
-    } else {
+    } else if (op == AND_OP || op == OR_OP || op == NOT_OP) {
         type = "bool";
     }
 }
@@ -75,7 +75,7 @@ WhileStatement::~WhileStatement() {
     delete b;
 }
 
-ForStatement::ForStatement(Exp *s, Exp *e, Exp *st, Body *b): start(s), end(e), step(st), b(b) {
+ForStatement::ForStatement(string id, Exp *s, Exp *e, Exp *st, Body *b): id(id), start(s), end(e), step(st), b(b) {
 }
 
 ForStatement::~ForStatement() {
@@ -84,7 +84,6 @@ ForStatement::~ForStatement() {
     delete step;
     delete b;
 }
-
 
 VarDec::VarDec(string type, list<string> ids): type(type), vars(ids) {
 }
@@ -153,6 +152,12 @@ string Exp::binopToChar(BinaryOp op) {
         case LE_OP: c = "<=";
             break;
         case EQ_OP: c = "==";
+            break;
+        case AND_OP: c = "and";
+            break;
+        case OR_OP: c = "or";
+            break;
+        case NOT_OP: c = "not";
             break;
         default: c = "$";
     }

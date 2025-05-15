@@ -6,7 +6,7 @@
 #include "visitor.h"
 using namespace std;
 
-enum BinaryOp { PLUS_OP, MINUS_OP, MUL_OP, DIV_OP, LT_OP, LE_OP, EQ_OP };
+enum BinaryOp { PLUS_OP, MINUS_OP, MUL_OP, DIV_OP, LT_OP, LE_OP, EQ_OP, AND_OP, OR_OP, NOT_OP };
 
 class Body;
 
@@ -47,7 +47,6 @@ public:
 
     ~IFExp();
 };
-
 
 class BinaryExp : public Exp {
 public:
@@ -154,12 +153,13 @@ public:
 //FOR(int,int,int) stmlist endfor
 class ForStatement : public Stm {
 public:
+    string id;
     Exp *start;
     Exp *end;
     Exp *step;
     Body *b;
 
-    ForStatement(Exp *start, Exp *end, Exp *step, Body *b);
+    ForStatement(string id, Exp *start, Exp *end, Exp *step, Body *b);
 
     int accept(Visitor *visitor);
 

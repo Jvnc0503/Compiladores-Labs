@@ -56,6 +56,16 @@ Token *Scanner::nextToken() {
             token = new Token(Token::TRUE, word, 0, word.length());
         } else if (word == "false") {
             token = new Token(Token::FALSE, word, 0, word.length());
+        } else if (word == "and") {
+            token = new Token(Token::AND, word, 0, word.length());
+        } else if (word == "or") {
+            token = new Token(Token::OR, word, 0, word.length());
+        } else if (word == "not") {
+            token = new Token(Token::NOT, word, 0, word.length());
+        } else if (word == "in") {
+            token = new Token(Token::IN, word, 0, word.length());
+        } else if (word == "range") {
+            token = new Token(Token::RANGE, word, 0, word.length());
         } else {
             token = new Token(Token::ID, word, 0, word.length());
         }

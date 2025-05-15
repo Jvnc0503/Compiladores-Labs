@@ -1,4 +1,7 @@
 var int x,y;
 x = 5;
 y = 4;
-print(x+y)
+print(x+y);
+for i in range(0, 5, 1)
+    print(i)
+endfor

@@ -120,10 +120,10 @@ list<Stm *> Parser::parseStmList() {
 }
 
 Stm *Parser::parseStatement() {
-    Stm *s = NULL;
-    Exp *e = NULL;
-    Body *tb = NULL; //true case
-    Body *fb = NULL; //false case
+    Stm *s = nullptr;
+    Exp *e = nullptr;
+    Body *tb = nullptr; //true case
+    Body *fb = nullptr; //false case
 
     if (current == NULL) {
         cout << "Error: Token actual es NULL" << endl;
@@ -180,6 +180,19 @@ Stm *Parser::parseStatement() {
         }
         s = new WhileStatement(e, tb);
     } else if (match(Token::FOR)) {
+        if (!match(Token::ID)) {
+            cout << "Error: se esperaba un identificador después de 'for'." << endl;
+            exit(1);
+        }
+        string id = previous->text;
+        if (!match(Token::IN)) {
+            cout << "Error: se esperaba 'in' después del identificador." << endl;
+            exit(1);
+        }
+        if (!match(Token::RANGE)) {
+            cout << "Error: se esperaba 'range' después de 'in'." << endl;
+            exit(1);
+        }
         if (!match(Token::PI)) {
             cout << "Error: se esperaba '(' después de 'for'." << endl;
             exit(1);
@@ -204,7 +217,7 @@ Stm *Parser::parseStatement() {
             cout << "Error: se esperaba 'endfor' al final de la declaración." << endl;
             exit(1);
         }
-        s = new ForStatement(start, end, step, tb);
+        s = new ForStatement(id, start, end, step, tb);
     } else {
         cout << "Error: Se esperaba un identificador o 'print', pero se encontró: " << *current << endl;
         exit(1);
