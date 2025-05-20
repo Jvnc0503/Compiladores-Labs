@@ -72,6 +72,12 @@ std::ostream &operator <<(std::ostream &outs, const Token &tok) {
             break;
         case Token::FALSE: outs << "TOKEN(FALSE)";
             break;
+        case Token::RETURN: outs << "TOKEN(RETURN)";
+            break;
+        case Token::FUN: outs << "TOKEN(FUN)";
+            break;
+        case Token::ENDFUN: outs << "TOKEN(ENDFUN)";
+            break;
         default: outs << "TOKEN(UNKNOWN)";
             break;
     }
