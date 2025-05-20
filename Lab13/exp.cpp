@@ -107,6 +107,10 @@ FunDecList::~FunDecList() {
     }
 }
 
+void FunDecList::add(FunDec *fundec) {
+    fundecs.push_back(fundec);
+}
+
 StatementList::StatementList(): stms() {
 }
 

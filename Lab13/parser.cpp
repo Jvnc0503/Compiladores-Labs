@@ -79,13 +79,65 @@ VarDec *Parser::parseVarDec() {
 
 VarDecList *Parser::parseVarDecList() {
     VarDecList *vdl = new VarDecList();
-    VarDec *aux;
-    aux = parseVarDec();
-    while (aux != NULL) {
+    VarDec *aux = parseVarDec();
+    while (aux != nullptr) {
         vdl->add(aux);
         aux = parseVarDec();
     }
     return vdl;
+}
+
+FunDecList *Parser::parseFunDecList() {
+    FunDecList *fdl = new FunDecList();
+    FunDec *aux = parseFunDec();
+    while (aux != nullptr) {
+        fdl->add(aux);
+        aux = parseFunDec();
+    }
+    return fdl;
+}
+
+FunDec *Parser::parseFunDec() {
+    FunDec *fd = nullptr;
+    if (match(Token::FUN)) {
+        if (!match(Token::ID)) {
+            cout << "Error: se esperaba un identificador después de 'fun'.\n";
+            exit(1);
+        }
+        const string type = previous->text;
+        if (!match(Token::ID)) {
+            cout << "Error: se esperaba un identificador después del nombre de la función.\n";
+            exit(1);
+        }
+        const string name = previous->text;
+        if (!match(Token::PI)) {
+            cout << "Error: se esperaba un '(' después del nombre de la función.\n";
+            exit(1);
+        }
+        list<string> types;
+        list<string> params;
+        while (match(Token::ID)) {
+            types.push_back(previous->text);
+            if (!match(Token::ID)) {
+                cout << "Error: se esperaba un identificador después del tipo de parámetro.\n";
+            }
+            params.push_back(previous->text);
+            if (!match(Token::COMA)) {
+                break;
+            }
+        }
+        if (!match(Token::PD)) {
+            cout << "Error: se esperaba un ')' después de los parámetros.\n";
+            exit(1);
+        }
+        Body *body = parseBody();
+        if (!match(Token::ENDFUN)) {
+            cout << "Error: se esperaba 'endfun' al final de la declaración de la función.\n";
+            exit(1);
+        }
+        return new FunDec(type, name, types, params, body);
+    }
+    return fd;
 }
 
 StatementList *Parser::parseStatementList() {
@@ -104,7 +156,9 @@ Body *Parser::parseBody() {
 }
 
 Program *Parser::parseProgram() {
-    return new Program();
+    VarDecList *v = parseVarDecList();
+    FunDecList *f = parseFunDecList();
+    return new Program(v, f);
 }
 
 list<Stm *> Parser::parseStmList() {

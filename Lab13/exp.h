@@ -185,14 +185,17 @@ class FunDec {
 public:
     string type;
     string name;
-    list<string> params;
     list<string> types;
+    list<string> params;
     Body *body;
 
-    FunDec(string type, string name, list<string> params, list<string> types, Body *body): type(std::move(type)),
+    FunDec(string type, string name, list<string> types, list<string> params, Body *body): type(std::move(type)),
         name(std::move(name)),
-        params(std::move(params)), types(std::move(types)), body(body) {
+        types(std::move(types)), params(std::move(params)),
+        body(body) {
     }
+
+    FunDec() = default;
 
     int accept(Visitor *visitor);
 
@@ -205,6 +208,10 @@ public:
 
     FunDecList(list<FunDec *> fundecs): fundecs(fundecs) {
     }
+
+    FunDecList() = default;
+
+    void add(FunDec *fundec);
 
     int accept(Visitor *visitor);
 

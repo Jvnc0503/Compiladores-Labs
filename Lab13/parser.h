@@ -39,6 +39,10 @@ public:
 
     VarDecList *parseVarDecList();
 
+    FunDecList *parseFunDecList();
+
+    FunDec *parseFunDec();
+
     Body *parseBody();
 };
 

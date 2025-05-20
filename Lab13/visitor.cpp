@@ -241,6 +241,10 @@ int EVALVisitor::visit(IdentifierExp *exp) {
     }
 }
 
+int EVALVisitor::visit(FunctionCallExp *exp) {
+    return 0;
+}
+
 void EVALVisitor::visit(AssignStatement *stm) {
     if (!env.check(stm->id)) {
         cout << "Variable no declarada: " << stm->id << endl;
@@ -273,6 +277,8 @@ void EVALVisitor::visit(WhileStatement *stm) {
     }
 }
 
+void EVALVisitor::visit(ReturnStatement *stm) {
+}
 
 int EVALVisitor::visit(IFExp *pepito) {
     if (pepito->cond->accept(this)) {
@@ -295,6 +301,12 @@ void EVALVisitor::visit(VarDecList *stm) {
     for (it = stm->vardecs.begin(); it != stm->vardecs.end(); it++) {
         (*it)->accept(this);
     }
+}
+
+void EVALVisitor::visit(FunDec *stm) {
+}
+
+void EVALVisitor::visit(FunDecList *stm) {
 }
 
 void EVALVisitor::visit(StatementList *stm) {
