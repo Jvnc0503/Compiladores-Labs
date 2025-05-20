@@ -7,7 +7,6 @@ using namespace std;
 Scanner::Scanner(const char *s): input(s), first(0), current(0) {
 }
 
-
 bool is_white_space(char c) {
     return c == ' ' || c == '\n' || c == '\r' || c == '\t';
 }
@@ -56,6 +55,12 @@ Token *Scanner::nextToken() {
             token = new Token(Token::TRUE, word, 0, word.length());
         } else if (word == "false") {
             token = new Token(Token::FALSE, word, 0, word.length());
+        } else if (word == "return") {
+            token = new Token(Token::RETURN, word, 0, word.length());
+        } else if (word == "fun") {
+            token = new Token(Token::FUN, word, 0, word.length());
+        } else if (word == "endfun") {
+            token = new Token(Token::ENDFUN, word, 0, word.length());
         } else {
             token = new Token(Token::ID, word, 0, word.length());
         }

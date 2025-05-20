@@ -47,8 +47,8 @@ int main(int argc, const char *argv[]) {
         cout << "IMPRIMIR:" << endl;
         printVisitor.imprimir(program);
         cout << endl;
-        cout << "EJECUTAR:" << endl;
-        evalVisitor.ejecutar(program);
+        // cout << "EJECUTAR:" << endl;
+        // evalVisitor.ejecutar(program);
         delete program;
     } catch (const exception &e) {
         cout << "Error durante la ejecución: " << e.what() << endl;
