@@ -26,7 +26,7 @@ int IdentifierExp::accept(Visitor *visitor) {
 }
 
 int FunctionCallExp::accept(Visitor *visitor) {
-    return 0;
+    return visitor->visit(this);
 }
 
 int AssignStatement::accept(Visitor *visitor) {
@@ -50,6 +50,7 @@ int WhileStatement::accept(Visitor *visitor) {
 }
 
 int ReturnStatement::accept(Visitor *visitor) {
+    visitor->visit(this);
     return 0;
 }
 
@@ -63,7 +64,13 @@ int VarDecList::accept(Visitor *visitor) {
     return 0;
 }
 
+int FunDec::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
 int FunDecList::accept(Visitor *visitor) {
+    visitor->visit(this);
     return 0;
 }
 
@@ -131,6 +138,8 @@ void PrintVisitor::visit(IfStatement *stm) {
 }
 
 void PrintVisitor::imprimir(Program *program) {
+    program->vardecs->accept(this);
+    program->fundecs->accept(this);
 }
 
 int PrintVisitor::visit(IFExp *pepito) {
@@ -174,6 +183,14 @@ void PrintVisitor::visit(VarDecList *stm) {
 }
 
 void PrintVisitor::visit(FunDec *stm) {
+    cout << "fun " << stm->type << ' ' << stm->name << '(';
+    for (const auto &i: stm->params) {
+        cout << i;
+        if (i != stm->params.back()) cout << ", ";
+    }
+    cout << ")\n";
+    stm->body->accept(this);
+    cout << "endfun\n";
 }
 
 void PrintVisitor::visit(FunDecList *stm) {
