@@ -97,17 +97,14 @@ StatementList *Parser::parseStatementList() {
     return sl;
 }
 
-
 Body *Parser::parseBody() {
     VarDecList *vdl = parseVarDecList();
     StatementList *sl = parseStatementList();
     return new Body(vdl, sl);
 }
 
-
 Program *Parser::parseProgram() {
-    Body *b = parseBody();
-    return new Program(b);
+    return new Program();
 }
 
 list<Stm *> Parser::parseStmList() {

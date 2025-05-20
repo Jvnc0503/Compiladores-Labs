@@ -30,7 +30,6 @@ public:
     ~IFExp();
 };
 
-
 class BinaryExp : public Exp {
 public:
     Exp *left, *right;
@@ -77,6 +76,19 @@ public:
     ~IdentifierExp();
 };
 
+class FunctionCallExp : public Exp {
+public:
+    std::string name;
+    std::list<Exp *> args;
+
+    FunctionCallExp(string name, std::list<Exp *> args): name(name), args(args) {
+    }
+
+    int accept(Visitor *visitor) override;
+
+    ~FunctionCallExp();
+};
+
 class Stm {
 public:
     virtual int accept(Visitor *visitor) = 0;
@@ -107,7 +119,6 @@ public:
     ~PrintStatement();
 };
 
-
 class IfStatement : public Stm {
 public:
     Exp *condition;
@@ -133,6 +144,17 @@ public:
     ~WhileStatement();
 };
 
+class ReturnStatement : public Stm {
+public:
+    Exp *e;
+
+    ReturnStatement(Exp *e): e(e) {
+    }
+
+    int accept(Visitor *visitor);
+
+    ~ReturnStatement();
+};
 
 class VarDec {
 public:
@@ -159,6 +181,36 @@ public:
     ~VarDecList();
 };
 
+class FunDec {
+public:
+    string type;
+    string name;
+    list<string> params;
+    list<string> types;
+    Body *body;
+
+    FunDec(string type, string name, list<string> params, list<string> types, Body *body): type(std::move(type)),
+        name(std::move(name)),
+        params(std::move(params)), types(std::move(types)), body(body) {
+    }
+
+    int accept(Visitor *visitor);
+
+    ~FunDec();
+};
+
+class FunDecList {
+public:
+    list<FunDec *> fundecs;
+
+    FunDecList(list<FunDec *> fundecs): fundecs(fundecs) {
+    }
+
+    int accept(Visitor *visitor);
+
+    ~FunDecList();
+};
+
 class StatementList {
 public:
     list<Stm *> stms;
@@ -171,7 +223,6 @@ public:
 
     ~StatementList();
 };
-
 
 class Body {
 public:
@@ -187,9 +238,14 @@ public:
 
 class Program {
 public:
-    Body *body;
+    VarDecList *vardecs;
+    FunDecList *fundecs;
 
-    Program(Body *body);
+    Program() = default;
+
+    Program(VarDecList *vardecs, FunDecList *fundecs): vardecs(vardecs), fundecs(fundecs) {
+        ;
+    }
 
     ~Program();
 };

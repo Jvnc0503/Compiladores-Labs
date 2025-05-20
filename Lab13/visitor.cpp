@@ -25,6 +25,10 @@ int IdentifierExp::accept(Visitor *visitor) {
     return visitor->visit(this);
 }
 
+int FunctionCallExp::accept(Visitor *visitor) {
+    return 0;
+}
+
 int AssignStatement::accept(Visitor *visitor) {
     visitor->visit(this);
     return 0;
@@ -45,6 +49,9 @@ int WhileStatement::accept(Visitor *visitor) {
     return 0;
 }
 
+int ReturnStatement::accept(Visitor *visitor) {
+    return 0;
+}
 
 int VarDec::accept(Visitor *visitor) {
     visitor->visit(this);
@@ -53,6 +60,10 @@ int VarDec::accept(Visitor *visitor) {
 
 int VarDecList::accept(Visitor *visitor) {
     visitor->visit(this);
+    return 0;
+}
+
+int FunDecList::accept(Visitor *visitor) {
     return 0;
 }
 
@@ -91,6 +102,10 @@ int PrintVisitor::visit(IdentifierExp *exp) {
     return 0;
 }
 
+int PrintVisitor::visit(FunctionCallExp *exp) {
+    return 0;
+}
+
 void PrintVisitor::visit(AssignStatement *stm) {
     cout << stm->id << " = ";
     stm->rhs->accept(this);
@@ -116,9 +131,7 @@ void PrintVisitor::visit(IfStatement *stm) {
 }
 
 void PrintVisitor::imprimir(Program *program) {
-    program->body->accept(this);
-};
-
+}
 
 int PrintVisitor::visit(IFExp *pepito) {
     cout << "ifexp(";
@@ -139,6 +152,8 @@ void PrintVisitor::visit(WhileStatement *stm) {
     cout << "endwhile";
 }
 
+void PrintVisitor::visit(ReturnStatement *stm) {
+}
 
 void PrintVisitor::visit(VarDec *stm) {
     cout << "var ";
@@ -156,6 +171,12 @@ void PrintVisitor::visit(VarDecList *stm) {
         i->accept(this);
         cout << endl;
     }
+}
+
+void PrintVisitor::visit(FunDec *stm) {
+}
+
+void PrintVisitor::visit(FunDecList *stm) {
 }
 
 void PrintVisitor::visit(StatementList *stm) {
@@ -236,7 +257,6 @@ void EVALVisitor::visit(PrintStatement *stm) {
 }
 
 void EVALVisitor::ejecutar(Program *program) {
-    program->body->accept(this);
 };
 
 void EVALVisitor::visit(IfStatement *stm) {
@@ -298,7 +318,6 @@ void EVALVisitor::visit(Body *b) {
 //2 = bool
 
 void TypeVisitor::check(Program *program) {
-    program->body->accept(this);
 }
 
 int TypeVisitor::visit(BinaryExp *exp) {
@@ -324,6 +343,10 @@ int TypeVisitor::visit(IdentifierExp *exp) {
         cout << "Variable no declarada: " << exp->name << endl;
         return 0;
     }
+}
+
+int TypeVisitor::visit(FunctionCallExp *exp) {
+    return 0;
 }
 
 int TypeVisitor::visit(IFExp *exp) {
@@ -375,6 +398,8 @@ void TypeVisitor::visit(WhileStatement *stm) {
     stm->b->accept(this);
 }
 
+void TypeVisitor::visit(ReturnStatement *stm) {
+}
 
 void TypeVisitor::visit(VarDec *stm) {
     list<string>::iterator it;
@@ -393,6 +418,12 @@ void TypeVisitor::visit(VarDecList *stm) {
     for (it = stm->vardecs.begin(); it != stm->vardecs.end(); it++) {
         (*it)->accept(this);
     }
+}
+
+void TypeVisitor::visit(FunDec *stm) {
+}
+
+void TypeVisitor::visit(FunDecList *stm) {
 }
 
 void TypeVisitor::visit(StatementList *stm) {

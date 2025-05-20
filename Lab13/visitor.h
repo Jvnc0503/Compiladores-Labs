@@ -18,6 +18,10 @@ class VarDecList;
 class StatementList;
 class Body;
 class Program;
+class FunctionCallExp;
+class FunDec;
+class FunDecList;
+class ReturnStatement;
 
 class Visitor {
 public:
@@ -31,6 +35,8 @@ public:
 
     virtual int visit(IdentifierExp *exp) = 0;
 
+    virtual int visit(FunctionCallExp *exp) = 0;
+
     virtual void visit(AssignStatement *stm) = 0;
 
     virtual void visit(PrintStatement *stm) = 0;
@@ -39,9 +45,15 @@ public:
 
     virtual void visit(WhileStatement *stm) = 0;
 
+    virtual void visit(ReturnStatement *stm) = 0;
+
     virtual void visit(VarDec *stm) = 0;
 
     virtual void visit(VarDecList *stm) = 0;
+
+    virtual void visit(FunDec *stm) = 0;
+
+    virtual void visit(FunDecList *stm) = 0;
 
     virtual void visit(StatementList *stm) = 0;
 
@@ -62,6 +74,8 @@ public:
 
     int visit(IdentifierExp *exp) override;
 
+    int visit(FunctionCallExp *exp) override;
+
     void visit(AssignStatement *stm) override;
 
     void visit(PrintStatement *stm) override;
@@ -70,9 +84,15 @@ public:
 
     void visit(WhileStatement *stm) override;
 
+    void visit(ReturnStatement *stm) override;
+
     void visit(VarDec *stm) override;
 
     void visit(VarDecList *stm) override;
+
+    void visit(FunDec *stm) override;
+
+    void visit(FunDecList *stm) override;
 
     void visit(StatementList *stm) override;
 
@@ -95,6 +115,8 @@ public:
 
     int visit(IdentifierExp *exp) override;
 
+    int visit(FunctionCallExp *exp) override;
+
     void visit(AssignStatement *stm) override;
 
     void visit(PrintStatement *stm) override;
@@ -103,9 +125,15 @@ public:
 
     void visit(WhileStatement *stm) override;
 
+    void visit(ReturnStatement *stm) override;
+
     void visit(VarDec *stm) override;
 
     void visit(VarDecList *stm) override;
+
+    void visit(FunDec *stm) override;
+
+    void visit(FunDecList *stm) override;
 
     void visit(StatementList *stm) override;
 
@@ -128,6 +156,8 @@ public:
 
     int visit(IdentifierExp *exp) override;
 
+    int visit(FunctionCallExp *exp) override;
+
     void visit(AssignStatement *stm) override;
 
     void visit(PrintStatement *stm) override;
@@ -136,9 +166,15 @@ public:
 
     void visit(WhileStatement *stm) override;
 
+    void visit(ReturnStatement *stm) override;
+
     void visit(VarDec *stm) override;
 
     void visit(VarDecList *stm) override;
+
+    void visit(FunDec *stm) override;
+
+    void visit(FunDecList *stm) override;
 
     void visit(StatementList *stm) override;
 
