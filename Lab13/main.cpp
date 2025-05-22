@@ -41,9 +41,9 @@ int main(int argc, const char *argv[]) {
         PrintVisitor printVisitor;
         EVALVisitor evalVisitor;
         TypeVisitor typeVisitor;
-        cout << "VERIFICANDO:" << endl;
-        typeVisitor.check(program);
-        cout << endl;
+        // cout << "VERIFICANDO:" << endl;
+        // typeVisitor.check(program);
+        // cout << endl;
         cout << "IMPRIMIR:" << endl;
         printVisitor.imprimir(program);
         cout << endl;
