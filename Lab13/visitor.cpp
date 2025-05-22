@@ -263,10 +263,9 @@ int EVALVisitor::visit(BoolExp *exp) {
 int EVALVisitor::visit(IdentifierExp *exp) {
     if (env.check(exp->name)) {
         return env.lookup(exp->name);
-    } else {
-        cout << "Variable no declarada: " << exp->name << endl;
-        return 0;
     }
+    cout << "Variable no declarada: " << exp->name << endl;
+    return 0;
 }
 
 int EVALVisitor::visit(FunctionCallExp *exp) {
@@ -289,7 +288,9 @@ void EVALVisitor::visit(PrintStatement *stm) {
 }
 
 void EVALVisitor::ejecutar(Program *program) {
-};
+    program->vardecs->accept(this);
+    program->fundecs->accept(this);
+}
 
 void EVALVisitor::visit(IfStatement *stm) {
     if (stm->condition->accept(this)) {
@@ -308,12 +309,11 @@ void EVALVisitor::visit(WhileStatement *stm) {
 void EVALVisitor::visit(ReturnStatement *stm) {
 }
 
-int EVALVisitor::visit(IFExp *pepito) {
-    if (pepito->cond->accept(this)) {
-        return pepito->left->accept(this);
-    } else {
-        return pepito->right->accept(this);
+int EVALVisitor::visit(IFExp *exp) {
+    if (exp->cond->accept(this)) {
+        return exp->left->accept(this);
     }
+    return exp->right->accept(this);
 }
 
 
@@ -335,6 +335,12 @@ void EVALVisitor::visit(FunDec *stm) {
 }
 
 void EVALVisitor::visit(FunDecList *stm) {
+    for (const auto &i: stm->fundecs) {
+        if (i->name == "main") {
+            i->accept(this);
+            break;
+        }
+    }
 }
 
 void EVALVisitor::visit(StatementList *stm) {
