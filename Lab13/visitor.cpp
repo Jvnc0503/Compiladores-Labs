@@ -110,6 +110,12 @@ int PrintVisitor::visit(IdentifierExp *exp) {
 }
 
 int PrintVisitor::visit(FunctionCallExp *exp) {
+    cout << exp->name << "(";
+    for (const auto &i: exp->args) {
+        i->accept(this);
+        if (i != exp->args.back()) cout << ", ";
+    }
+    cout << ")";
     return 0;
 }
 
@@ -156,19 +162,21 @@ int PrintVisitor::visit(IFExp *pepito) {
 void PrintVisitor::visit(WhileStatement *stm) {
     cout << "while ";
     stm->condition->accept(this);
-    cout << " do" << endl;
+    cout << " do\n";
     stm->b->accept(this);
     cout << "endwhile";
 }
 
 void PrintVisitor::visit(ReturnStatement *stm) {
+    cout << "return ";
+    stm->e->accept(this);
 }
 
 void PrintVisitor::visit(VarDec *stm) {
     cout << "var ";
     cout << stm->type;
     cout << " ";
-    for (auto i: stm->vars) {
+    for (const auto &i: stm->vars) {
         cout << i;
         if (i != stm->vars.back()) cout << ", ";
     }
@@ -176,7 +184,7 @@ void PrintVisitor::visit(VarDec *stm) {
 }
 
 void PrintVisitor::visit(VarDecList *stm) {
-    for (auto i: stm->vardecs) {
+    for (const auto &i: stm->vardecs) {
         i->accept(this);
         cout << endl;
     }
@@ -194,18 +202,21 @@ void PrintVisitor::visit(FunDec *stm) {
 }
 
 void PrintVisitor::visit(FunDecList *stm) {
+    for (const auto &i: stm->fundecs) {
+        i->accept(this);
+        cout << '\n';
+    }
 }
 
 void PrintVisitor::visit(StatementList *stm) {
-    for (auto i: stm->stms) {
+    for (const auto &i: stm->stms) {
         i->accept(this);
-        cout << endl;
+        cout << '\n';
     }
 }
 
 void PrintVisitor::visit(Body *stm) {
     stm->vardecs->accept(this);
-    cout << endl;
     stm->slist->accept(this);
 }
 
