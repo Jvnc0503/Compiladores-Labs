@@ -101,50 +101,12 @@ public:
 
 class EVALVisitor : public Visitor {
     Environment env;
+    unordered_map<string, FunDec *> functions;
+    bool retcall = false;
+    int retval = 0;
 
 public:
     void ejecutar(Program *program);
-
-    int visit(IFExp *exp) override;
-
-    int visit(BinaryExp *exp) override;
-
-    int visit(NumberExp *exp) override;
-
-    int visit(BoolExp *exp) override;
-
-    int visit(IdentifierExp *exp) override;
-
-    int visit(FunctionCallExp *exp) override;
-
-    void visit(AssignStatement *stm) override;
-
-    void visit(PrintStatement *stm) override;
-
-    void visit(IfStatement *stm) override;
-
-    void visit(WhileStatement *stm) override;
-
-    void visit(ReturnStatement *stm) override;
-
-    void visit(VarDec *stm) override;
-
-    void visit(VarDecList *stm) override;
-
-    void visit(FunDec *stm) override;
-
-    void visit(FunDecList *stm) override;
-
-    void visit(StatementList *stm) override;
-
-    void visit(Body *b) override;
-};
-
-class TypeVisitor : public Visitor {
-    Environment env;
-
-public:
-    void check(Program *program);
 
     int visit(IFExp *exp) override;
 

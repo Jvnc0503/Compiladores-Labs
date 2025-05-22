@@ -269,7 +269,30 @@ int EVALVisitor::visit(IdentifierExp *exp) {
 }
 
 int EVALVisitor::visit(FunctionCallExp *exp) {
-    return 0;
+    env.add_level();
+    retcall = false;
+    FunDec *f = functions[exp->name];
+    if (f == nullptr) {
+        cout << "Error: función no declarada: " << exp->name << endl;
+        exit(0);
+    }
+    if (f->params.size() != exp->args.size()) {
+        cout << "Error: número de argumentos incorrecto para la función " << exp->name << endl;
+        exit(0);
+    }
+    for (size_t i = 0; i < f->params.size(); ++i) {
+        env.add_var(f->params[i], f->type);
+    }
+    for (size_t i = 0; i < exp->args.size(); ++i) {
+        env.update(f->params[i], exp->args[i]->accept(this));
+    }
+    f->body->accept(this);
+    env.remove_level();
+    if (!retcall) {
+        cout << "Error: función no retorna: " << exp->name << endl;
+        exit(0);
+    }
+    return retval;
 }
 
 void EVALVisitor::visit(AssignStatement *stm) {
@@ -288,8 +311,20 @@ void EVALVisitor::visit(PrintStatement *stm) {
 }
 
 void EVALVisitor::ejecutar(Program *program) {
+    env.add_level();
     program->vardecs->accept(this);
     program->fundecs->accept(this);
+    if (!functions.contains("main")) {
+        exit(0);
+    }
+    FunDec *main = functions["main"];
+    retcall = false;
+    main->body->accept(this);
+    env.remove_level();
+    if (!retcall) {
+        cout << "Error: main no retorna\n";
+        exit(1);
+    }
 }
 
 void EVALVisitor::visit(IfStatement *stm) {
@@ -307,6 +342,8 @@ void EVALVisitor::visit(WhileStatement *stm) {
 }
 
 void EVALVisitor::visit(ReturnStatement *stm) {
+    retcall = true;
+    retval = stm->e->accept(this);
 }
 
 int EVALVisitor::visit(IFExp *exp) {
@@ -315,7 +352,6 @@ int EVALVisitor::visit(IFExp *exp) {
     }
     return exp->right->accept(this);
 }
-
 
 void EVALVisitor::visit(VarDec *stm) {
     list<string>::iterator it;
@@ -332,6 +368,7 @@ void EVALVisitor::visit(VarDecList *stm) {
 }
 
 void EVALVisitor::visit(FunDec *stm) {
+    functions[stm->name] = stm;
 }
 
 void EVALVisitor::visit(FunDecList *stm) {
@@ -348,135 +385,6 @@ void EVALVisitor::visit(StatementList *stm) {
 }
 
 void EVALVisitor::visit(Body *b) {
-    env.add_level();
-    b->vardecs->accept(this);
-    b->slist->accept(this);
-    env.remove_level();
-}
-
-///////////////////////////////////////////////////////////////////////////////////
-
-//0 = undefined
-//1 = int
-//2 = bool
-
-void TypeVisitor::check(Program *program) {
-}
-
-int TypeVisitor::visit(BinaryExp *exp) {
-    if (exp->type == "int") return 1;
-    else if (exp->type == "bool") return 2;
-    else return 0;
-}
-
-int TypeVisitor::visit(NumberExp *exp) {
-    return 1;
-}
-
-int TypeVisitor::visit(BoolExp *exp) {
-    return 2;
-}
-
-int TypeVisitor::visit(IdentifierExp *exp) {
-    if (env.check(exp->name)) {
-        if (env.lookup_type(exp->name) == "int") return 1;
-        else if (env.lookup_type(exp->name) == "bool") return 2;
-        else return 0;
-    } else {
-        cout << "Variable no declarada: " << exp->name << endl;
-        return 0;
-    }
-}
-
-int TypeVisitor::visit(FunctionCallExp *exp) {
-    return 0;
-}
-
-int TypeVisitor::visit(IFExp *exp) {
-    int t1 = exp->cond->accept(this);
-    int t2 = exp->left->accept(this);
-    int t3 = exp->right->accept(this);
-    if (t1 == 2 && t2 == t3) return t2;
-    else {
-        cout << "Error: tipos incompatibles en la expresión if" << endl;
-        return 0;
-    }
-}
-
-void TypeVisitor::visit(AssignStatement *stm) {
-    int t1 = stm->rhs->accept(this);
-    if (env.check(stm->id)) {
-        if (env.lookup_type(stm->id) == "int" && t1 == 1) return;
-        else if (env.lookup_type(stm->id) == "bool" && t1 == 2) return;
-        else {
-            cout << "Error: tipos incompatibles en la asignación" << endl;
-            return;
-        }
-    } else {
-        cout << "Variable no declarada: " << stm->id << endl;
-        return;
-    }
-}
-
-void TypeVisitor::visit(PrintStatement *stm) {
-    stm->e->accept(this);
-}
-
-void TypeVisitor::visit(IfStatement *stm) {
-    int t1 = stm->condition->accept(this);
-    if (t1 != 2) {
-        cout << "Error: la condición del if debe ser de tipo bool" << endl;
-        return;
-    }
-    stm->then->accept(this);
-    if (stm->els) stm->els->accept(this);
-}
-
-void TypeVisitor::visit(WhileStatement *stm) {
-    int t1 = stm->condition->accept(this);
-    if (t1 != 2) {
-        cout << "Error: la condición del while debe ser de tipo bool" << endl;
-        return;
-    }
-    stm->b->accept(this);
-}
-
-void TypeVisitor::visit(ReturnStatement *stm) {
-}
-
-void TypeVisitor::visit(VarDec *stm) {
-    list<string>::iterator it;
-    for (it = stm->vars.begin(); it != stm->vars.end(); it++) {
-        if (stm->type == "int") env.add_var(*it, "int");
-        else if (stm->type == "bool") env.add_var(*it, "bool");
-        else {
-            cout << "Error: tipo desconocido" << endl;
-            return;
-        }
-    }
-}
-
-void TypeVisitor::visit(VarDecList *stm) {
-    list<VarDec *>::iterator it;
-    for (it = stm->vardecs.begin(); it != stm->vardecs.end(); it++) {
-        (*it)->accept(this);
-    }
-}
-
-void TypeVisitor::visit(FunDec *stm) {
-}
-
-void TypeVisitor::visit(FunDecList *stm) {
-}
-
-void TypeVisitor::visit(StatementList *stm) {
-    list<Stm *>::iterator it;
-    for (it = stm->stms.begin(); it != stm->stms.end(); it++) {
-        (*it)->accept(this);
-    }
-}
-
-void TypeVisitor::visit(Body *b) {
     env.add_level();
     b->vardecs->accept(this);
     b->slist->accept(this);

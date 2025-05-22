@@ -114,8 +114,8 @@ FunDec *Parser::parseFunDec() {
             cout << "Error: se esperaba un '(' después del nombre de la función.\n";
             exit(1);
         }
-        list<string> types;
-        list<string> params;
+        vector<string> types;
+        vector<string> params;
         while (match(Token::ID)) {
             types.push_back(previous->text);
             if (!match(Token::ID)) {
@@ -311,7 +311,7 @@ Exp *Parser::parseFactor() {
     if (match(Token::ID)) {
         const string name = previous->text;
         if (match(Token::PI)) {
-            list<Exp *> args;
+            vector<Exp *> args;
             args.push_back(parseCExp());
             while (match(Token::COMA)) {
                 args.push_back(parseCExp());

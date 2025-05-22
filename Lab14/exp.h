@@ -80,9 +80,9 @@ public:
 class FunctionCallExp : public Exp {
 public:
     string name;
-    list<Exp *> args;
+    vector<Exp *> args;
 
-    FunctionCallExp(string name, list<Exp *> args): name(std::move(name)), args(std::move(args)) {
+    FunctionCallExp(string name, vector<Exp *> args): name(std::move(name)), args(std::move(args)) {
     }
 
     int accept(Visitor *visitor) override;
@@ -186,17 +186,15 @@ class FunDec {
 public:
     string type;
     string name;
-    list<string> types;
-    list<string> params;
+    vector<string> types;
+    vector<string> params;
     Body *body;
 
-    FunDec(string type, string name, list<string> types, list<string> params, Body *body): type(std::move(type)),
+    FunDec(string type, string name, vector<string> types, vector<string> params, Body *body): type(std::move(type)),
         name(std::move(name)),
         types(std::move(types)), params(std::move(params)),
         body(body) {
     }
-
-    // FunDec() = default;
 
     int accept(Visitor *visitor);
 
