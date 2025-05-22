@@ -336,10 +336,7 @@ void EVALVisitor::visit(FunDec *stm) {
 
 void EVALVisitor::visit(FunDecList *stm) {
     for (const auto &i: stm->fundecs) {
-        if (i->name == "main") {
-            i->accept(this);
-            break;
-        }
+        i->accept(this);
     }
 }
 
