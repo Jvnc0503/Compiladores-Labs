@@ -75,12 +75,14 @@ WhileStatement::~WhileStatement() {
     delete b;
 }
 
+ReturnStatement::~ReturnStatement() {
+    delete e;
+}
 
 VarDec::VarDec(string type, list<string> ids): type(type), vars(ids) {
 }
 
-VarDec::~VarDec() {
-}
+VarDec::~VarDec() = default;
 
 VarDecList::VarDecList(): vardecs() {
 }
@@ -93,6 +95,20 @@ VarDecList::~VarDecList() {
     for (auto v: vardecs) {
         delete v;
     }
+}
+
+FunDec::~FunDec() {
+    delete body;
+}
+
+FunDecList::~FunDecList() {
+    for (const auto f: fundecs) {
+        delete f;
+    }
+}
+
+void FunDecList::add(FunDec *fundec) {
+    fundecs.push_back(fundec);
 }
 
 StatementList::StatementList(): stms() {
@@ -116,6 +132,16 @@ Body::~Body() {
     delete slist;
 }
 
+Program::~Program() {
+    delete vardecs;
+    delete fundecs;
+}
+
+FunctionCallExp::~FunctionCallExp() {
+    for (const auto arg: args) {
+        delete arg;
+    }
+}
 
 Stm::~Stm() {
 }

@@ -6,15 +6,15 @@ set(CMAKE_CXX_STANDARD 20)
 include_directories(.)
 
 add_executable(Lab14
-        environment.h
-        exp.cpp
-        exp.h
-        main.cpp
-        parser.cpp
-        parser.h
-        scanner.cpp
-        scanner.h
-        token.cpp
-        token.h
-        visitor.cpp
-        visitor.h)
+    environment.h
+    exp.cpp
+    exp.h
+    main.cpp
+    parser.cpp
+    parser.h
+    scanner.cpp
+    scanner.h
+    token.cpp
+    token.h
+    visitor.cpp
+    visitor.h)

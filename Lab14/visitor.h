@@ -17,11 +17,11 @@ class VarDec;
 class VarDecList;
 class StatementList;
 class Body;
-class FCallExp;
+class Program;
+class FunctionCallExp;
 class FunDec;
 class FunDecList;
 class ReturnStatement;
-class Program;
 
 class Visitor {
 public:
@@ -35,13 +35,7 @@ public:
 
     virtual int visit(IdentifierExp *exp) = 0;
 
-    virtual int visit(FCallExp *exp) = 0;
-
-    virtual void visit(ReturnStatement *stm) = 0;
-
-    virtual void visit(FunDec *f) =0;
-
-    virtual void visit(FunDecList *f) =0;
+    virtual int visit(FunctionCallExp *exp) = 0;
 
     virtual void visit(AssignStatement *stm) = 0;
 
@@ -51,9 +45,15 @@ public:
 
     virtual void visit(WhileStatement *stm) = 0;
 
+    virtual void visit(ReturnStatement *stm) = 0;
+
     virtual void visit(VarDec *stm) = 0;
 
     virtual void visit(VarDecList *stm) = 0;
+
+    virtual void visit(FunDec *stm) = 0;
+
+    virtual void visit(FunDecList *stm) = 0;
 
     virtual void visit(StatementList *stm) = 0;
 
@@ -72,15 +72,9 @@ public:
 
     int visit(BoolExp *exp) override;
 
-    int visit(FCallExp *exp) override;
-
-    void visit(ReturnStatement *stm) override;
-
-    void visit(FunDec *f) override;
-
-    void visit(FunDecList *f) override;
-
     int visit(IdentifierExp *exp) override;
+
+    int visit(FunctionCallExp *exp) override;
 
     void visit(AssignStatement *stm) override;
 
@@ -90,9 +84,15 @@ public:
 
     void visit(WhileStatement *stm) override;
 
+    void visit(ReturnStatement *stm) override;
+
     void visit(VarDec *stm) override;
 
     void visit(VarDecList *stm) override;
+
+    void visit(FunDec *stm) override;
+
+    void visit(FunDecList *stm) override;
 
     void visit(StatementList *stm) override;
 
@@ -115,30 +115,70 @@ public:
 
     int visit(IdentifierExp *exp) override;
 
+    int visit(FunctionCallExp *exp) override;
+
     void visit(AssignStatement *stm) override;
 
     void visit(PrintStatement *stm) override;
-
-    int visit(FCallExp *exp) override;
-
-    void visit(ReturnStatement *stm) override;
-
-    void visit(FunDec *f) override;
-
-    void visit(FunDecList *f) override;
 
     void visit(IfStatement *stm) override;
 
     void visit(WhileStatement *stm) override;
 
+    void visit(ReturnStatement *stm) override;
+
     void visit(VarDec *stm) override;
 
     void visit(VarDecList *stm) override;
+
+    void visit(FunDec *stm) override;
+
+    void visit(FunDecList *stm) override;
 
     void visit(StatementList *stm) override;
 
     void visit(Body *b) override;
 };
 
+class TypeVisitor : public Visitor {
+    Environment env;
+
+public:
+    void check(Program *program);
+
+    int visit(IFExp *exp) override;
+
+    int visit(BinaryExp *exp) override;
+
+    int visit(NumberExp *exp) override;
+
+    int visit(BoolExp *exp) override;
+
+    int visit(IdentifierExp *exp) override;
+
+    int visit(FunctionCallExp *exp) override;
+
+    void visit(AssignStatement *stm) override;
+
+    void visit(PrintStatement *stm) override;
+
+    void visit(IfStatement *stm) override;
+
+    void visit(WhileStatement *stm) override;
+
+    void visit(ReturnStatement *stm) override;
+
+    void visit(VarDec *stm) override;
+
+    void visit(VarDecList *stm) override;
+
+    void visit(FunDec *stm) override;
+
+    void visit(FunDecList *stm) override;
+
+    void visit(StatementList *stm) override;
+
+    void visit(Body *b) override;
+};
 
 #endif // VISITOR_H

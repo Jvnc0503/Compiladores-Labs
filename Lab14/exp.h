@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <list>
+#include <utility>
 #include "visitor.h"
 using namespace std;
 
@@ -76,6 +77,19 @@ public:
     ~IdentifierExp();
 };
 
+class FunctionCallExp : public Exp {
+public:
+    string name;
+    list<Exp *> args;
+
+    FunctionCallExp(string name, list<Exp *> args): name(std::move(name)), args(std::move(args)) {
+    }
+
+    int accept(Visitor *visitor) override;
+
+    ~FunctionCallExp() override;
+};
+
 class Stm {
 public:
     virtual int accept(Visitor *visitor) = 0;
@@ -106,7 +120,6 @@ public:
     ~PrintStatement();
 };
 
-
 class IfStatement : public Stm {
 public:
     Exp *condition;
@@ -132,6 +145,17 @@ public:
     ~WhileStatement();
 };
 
+class ReturnStatement : public Stm {
+public:
+    Exp *e;
+
+    ReturnStatement(Exp *e): e(e) {
+    }
+
+    int accept(Visitor *visitor);
+
+    ~ReturnStatement();
+};
 
 class VarDec {
 public:
@@ -158,6 +182,43 @@ public:
     ~VarDecList();
 };
 
+class FunDec {
+public:
+    string type;
+    string name;
+    list<string> types;
+    list<string> params;
+    Body *body;
+
+    FunDec(string type, string name, list<string> types, list<string> params, Body *body): type(std::move(type)),
+        name(std::move(name)),
+        types(std::move(types)), params(std::move(params)),
+        body(body) {
+    }
+
+    // FunDec() = default;
+
+    int accept(Visitor *visitor);
+
+    ~FunDec();
+};
+
+class FunDecList {
+public:
+    list<FunDec *> fundecs;
+
+    FunDecList(list<FunDec *> fundecs): fundecs(fundecs) {
+    }
+
+    FunDecList() = default;
+
+    void add(FunDec *fundec);
+
+    int accept(Visitor *visitor);
+
+    ~FunDecList();
+};
+
 class StatementList {
 public:
     list<Stm *> stms;
@@ -171,79 +232,16 @@ public:
     ~StatementList();
 };
 
-
 class Body {
 public:
     VarDecList *vardecs;
     StatementList *slist;
 
-    int accept(Visitor *visitor);
-
     Body(VarDecList *vardecs, StatementList *stms);
 
+    int accept(Visitor *visitor);
+
     ~Body();
-};
-
-
-class FunDec {
-public:
-    string nombre;
-    string tipo;
-    list<string> parametros;
-    list<string> tipos;
-    Body *cuerpo;
-
-    FunDec() {
-    };
-
-    ~FunDec() {
-    };
-
-    int accept(Visitor *visitor);
-};
-
-class FCallExp : public Exp {
-public:
-    string nombre;
-    list<Exp *> argumentos;
-
-    FCallExp() {
-    };
-
-    ~FCallExp() {
-    };
-
-    int accept(Visitor *visitor);
-};
-
-class FunDecList {
-public:
-    list<FunDec *> Fundecs;
-
-    void add(FunDec *fundec) {
-        Fundecs.push_back(fundec);
-    };
-
-    int accept(Visitor *visitor);
-
-    FunDecList() {
-    };
-
-    ~FunDecList() {
-    };
-};
-
-class ReturnStatement : public Stm {
-public:
-    Exp *e;
-
-    ReturnStatement() {
-    };
-
-    ~ReturnStatement() {
-    };
-
-    int accept(Visitor *visitor);
 };
 
 class Program {
@@ -251,11 +249,13 @@ public:
     VarDecList *vardecs;
     FunDecList *fundecs;
 
-    Program() {
-    };
+    Program() = default;
 
-    ~Program() {
-    };
+    Program(VarDecList *vardecs, FunDecList *fundecs): vardecs(vardecs), fundecs(fundecs) {
+        ;
+    }
+
+    ~Program();
 };
 
 

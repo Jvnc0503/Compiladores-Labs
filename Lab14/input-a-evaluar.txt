@@ -8,5 +8,5 @@ fun void main()
     a = 5;
     b = 6;
     print(suma(a,b));
-    return()
+    return(0)
 endfun

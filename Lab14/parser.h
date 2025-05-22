@@ -39,11 +39,11 @@ public:
 
     VarDecList *parseVarDecList();
 
-    Body *parseBody();
-
     FunDecList *parseFunDecList();
 
     FunDec *parseFunDec();
+
+    Body *parseBody();
 };
 
 #endif // PARSER_H

@@ -25,6 +25,10 @@ int IdentifierExp::accept(Visitor *visitor) {
     return visitor->visit(this);
 }
 
+int FunctionCallExp::accept(Visitor *visitor) {
+    return visitor->visit(this);
+}
+
 int AssignStatement::accept(Visitor *visitor) {
     visitor->visit(this);
     return 0;
@@ -45,6 +49,10 @@ int WhileStatement::accept(Visitor *visitor) {
     return 0;
 }
 
+int ReturnStatement::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
+}
 
 int VarDec::accept(Visitor *visitor) {
     visitor->visit(this);
@@ -56,31 +64,22 @@ int VarDecList::accept(Visitor *visitor) {
     return 0;
 }
 
-int StatementList::accept(Visitor *visitor) {
-    visitor->visit(this);
-    return 0;
-}
-
-int Body::accept(Visitor *visitor) {
-    visitor->visit(this);
-    return 0;
-}
-
-int FCallExp::accept(Visitor *visitor) {
-    return visitor->visit(this);
-}
-
-int ReturnStatement::accept(Visitor *visitor) {
-    visitor->visit(this);
-    return 0;
-}
-
 int FunDec::accept(Visitor *visitor) {
     visitor->visit(this);
     return 0;
 }
 
 int FunDecList::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int StatementList::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int Body::accept(Visitor *visitor) {
     visitor->visit(this);
     return 0;
 }
@@ -110,6 +109,16 @@ int PrintVisitor::visit(IdentifierExp *exp) {
     return 0;
 }
 
+int PrintVisitor::visit(FunctionCallExp *exp) {
+    cout << exp->name << "(";
+    for (const auto &i: exp->args) {
+        i->accept(this);
+        if (i != exp->args.back()) cout << ", ";
+    }
+    cout << ")";
+    return 0;
+}
+
 void PrintVisitor::visit(AssignStatement *stm) {
     cout << stm->id << " = ";
     stm->rhs->accept(this);
@@ -136,10 +145,8 @@ void PrintVisitor::visit(IfStatement *stm) {
 
 void PrintVisitor::imprimir(Program *program) {
     program->vardecs->accept(this);
-    cout << endl;
     program->fundecs->accept(this);
-};
-
+}
 
 int PrintVisitor::visit(IFExp *pepito) {
     cout << "ifexp(";
@@ -155,17 +162,21 @@ int PrintVisitor::visit(IFExp *pepito) {
 void PrintVisitor::visit(WhileStatement *stm) {
     cout << "while ";
     stm->condition->accept(this);
-    cout << " do" << endl;
+    cout << " do\n";
     stm->b->accept(this);
     cout << "endwhile";
 }
 
+void PrintVisitor::visit(ReturnStatement *stm) {
+    cout << "return ";
+    stm->e->accept(this);
+}
 
 void PrintVisitor::visit(VarDec *stm) {
     cout << "var ";
     cout << stm->type;
     cout << " ";
-    for (auto i: stm->vars) {
+    for (const auto &i: stm->vars) {
         cout << i;
         if (i != stm->vars.back()) cout << ", ";
     }
@@ -173,22 +184,39 @@ void PrintVisitor::visit(VarDec *stm) {
 }
 
 void PrintVisitor::visit(VarDecList *stm) {
-    for (auto i: stm->vardecs) {
+    for (const auto &i: stm->vardecs) {
         i->accept(this);
         cout << endl;
     }
 }
 
-void PrintVisitor::visit(StatementList *stm) {
-    for (auto i: stm->stms) {
+void PrintVisitor::visit(FunDec *stm) {
+    cout << "fun " << stm->type << ' ' << stm->name << '(';
+    for (const auto &i: stm->params) {
+        cout << i;
+        if (i != stm->params.back()) cout << ", ";
+    }
+    cout << ")\n";
+    stm->body->accept(this);
+    cout << "endfun\n";
+}
+
+void PrintVisitor::visit(FunDecList *stm) {
+    for (const auto &i: stm->fundecs) {
         i->accept(this);
-        cout << endl;
+        cout << '\n';
+    }
+}
+
+void PrintVisitor::visit(StatementList *stm) {
+    for (const auto &i: stm->stms) {
+        i->accept(this);
+        cout << '\n';
     }
 }
 
 void PrintVisitor::visit(Body *stm) {
     stm->vardecs->accept(this);
-    cout << endl;
     stm->slist->accept(this);
 }
 
@@ -235,10 +263,13 @@ int EVALVisitor::visit(BoolExp *exp) {
 int EVALVisitor::visit(IdentifierExp *exp) {
     if (env.check(exp->name)) {
         return env.lookup(exp->name);
-    } else {
-        cout << "Variable no declarada: " << exp->name << endl;
-        return 0;
     }
+    cout << "Variable no declarada: " << exp->name << endl;
+    return 0;
+}
+
+int EVALVisitor::visit(FunctionCallExp *exp) {
+    return 0;
 }
 
 void EVALVisitor::visit(AssignStatement *stm) {
@@ -257,8 +288,9 @@ void EVALVisitor::visit(PrintStatement *stm) {
 }
 
 void EVALVisitor::ejecutar(Program *program) {
-    //    program->body->accept(this);
-};
+    program->vardecs->accept(this);
+    program->fundecs->accept(this);
+}
 
 void EVALVisitor::visit(IfStatement *stm) {
     if (stm->condition->accept(this)) {
@@ -274,13 +306,14 @@ void EVALVisitor::visit(WhileStatement *stm) {
     }
 }
 
+void EVALVisitor::visit(ReturnStatement *stm) {
+}
 
-int EVALVisitor::visit(IFExp *pepito) {
-    if (pepito->cond->accept(this)) {
-        return pepito->left->accept(this);
-    } else {
-        return pepito->right->accept(this);
+int EVALVisitor::visit(IFExp *exp) {
+    if (exp->cond->accept(this)) {
+        return exp->left->accept(this);
     }
+    return exp->right->accept(this);
 }
 
 
@@ -295,6 +328,15 @@ void EVALVisitor::visit(VarDecList *stm) {
     list<VarDec *>::iterator it;
     for (it = stm->vardecs.begin(); it != stm->vardecs.end(); it++) {
         (*it)->accept(this);
+    }
+}
+
+void EVALVisitor::visit(FunDec *stm) {
+}
+
+void EVALVisitor::visit(FunDecList *stm) {
+    for (const auto &i: stm->fundecs) {
+        i->accept(this);
     }
 }
 
@@ -314,40 +356,129 @@ void EVALVisitor::visit(Body *b) {
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-int PrintVisitor::visit(FCallExp *e) {
+//0 = undefined
+//1 = int
+//2 = bool
+
+void TypeVisitor::check(Program *program) {
+}
+
+int TypeVisitor::visit(BinaryExp *exp) {
+    if (exp->type == "int") return 1;
+    else if (exp->type == "bool") return 2;
+    else return 0;
+}
+
+int TypeVisitor::visit(NumberExp *exp) {
+    return 1;
+}
+
+int TypeVisitor::visit(BoolExp *exp) {
+    return 2;
+}
+
+int TypeVisitor::visit(IdentifierExp *exp) {
+    if (env.check(exp->name)) {
+        if (env.lookup_type(exp->name) == "int") return 1;
+        else if (env.lookup_type(exp->name) == "bool") return 2;
+        else return 0;
+    } else {
+        cout << "Variable no declarada: " << exp->name << endl;
+        return 0;
+    }
+}
+
+int TypeVisitor::visit(FunctionCallExp *exp) {
     return 0;
 }
 
-void PrintVisitor::visit(FunDec *e) {
-    cout << "fun " << e->tipo << " " << e->nombre << "(";
-    for (auto i: e->parametros) {
-        cout << i << ",";
-    }
-    cout << ")" << endl;
-    e->cuerpo->accept(this);
-    cout << "endfun";
-}
-
-void PrintVisitor::visit(FunDecList *e) {
-    for (auto i: e->Fundecs) {
-        i->accept(this);
-        cout << endl;
+int TypeVisitor::visit(IFExp *exp) {
+    int t1 = exp->cond->accept(this);
+    int t2 = exp->left->accept(this);
+    int t3 = exp->right->accept(this);
+    if (t1 == 2 && t2 == t3) return t2;
+    else {
+        cout << "Error: tipos incompatibles en la expresión if" << endl;
+        return 0;
     }
 }
 
-void PrintVisitor::visit(ReturnStatement *e) {
+void TypeVisitor::visit(AssignStatement *stm) {
+    int t1 = stm->rhs->accept(this);
+    if (env.check(stm->id)) {
+        if (env.lookup_type(stm->id) == "int" && t1 == 1) return;
+        else if (env.lookup_type(stm->id) == "bool" && t1 == 2) return;
+        else {
+            cout << "Error: tipos incompatibles en la asignación" << endl;
+            return;
+        }
+    } else {
+        cout << "Variable no declarada: " << stm->id << endl;
+        return;
+    }
 }
 
-
-int EVALVisitor::visit(FCallExp *e) {
-    return 0;
+void TypeVisitor::visit(PrintStatement *stm) {
+    stm->e->accept(this);
 }
 
-void EVALVisitor::visit(FunDec *e) {
+void TypeVisitor::visit(IfStatement *stm) {
+    int t1 = stm->condition->accept(this);
+    if (t1 != 2) {
+        cout << "Error: la condición del if debe ser de tipo bool" << endl;
+        return;
+    }
+    stm->then->accept(this);
+    if (stm->els) stm->els->accept(this);
 }
 
-void EVALVisitor::visit(FunDecList *e) {
+void TypeVisitor::visit(WhileStatement *stm) {
+    int t1 = stm->condition->accept(this);
+    if (t1 != 2) {
+        cout << "Error: la condición del while debe ser de tipo bool" << endl;
+        return;
+    }
+    stm->b->accept(this);
 }
 
-void EVALVisitor::visit(ReturnStatement *e) {
+void TypeVisitor::visit(ReturnStatement *stm) {
+}
+
+void TypeVisitor::visit(VarDec *stm) {
+    list<string>::iterator it;
+    for (it = stm->vars.begin(); it != stm->vars.end(); it++) {
+        if (stm->type == "int") env.add_var(*it, "int");
+        else if (stm->type == "bool") env.add_var(*it, "bool");
+        else {
+            cout << "Error: tipo desconocido" << endl;
+            return;
+        }
+    }
+}
+
+void TypeVisitor::visit(VarDecList *stm) {
+    list<VarDec *>::iterator it;
+    for (it = stm->vardecs.begin(); it != stm->vardecs.end(); it++) {
+        (*it)->accept(this);
+    }
+}
+
+void TypeVisitor::visit(FunDec *stm) {
+}
+
+void TypeVisitor::visit(FunDecList *stm) {
+}
+
+void TypeVisitor::visit(StatementList *stm) {
+    list<Stm *>::iterator it;
+    for (it = stm->stms.begin(); it != stm->stms.end(); it++) {
+        (*it)->accept(this);
+    }
+}
+
+void TypeVisitor::visit(Body *b) {
+    env.add_level();
+    b->vardecs->accept(this);
+    b->slist->accept(this);
+    env.remove_level();
 }
