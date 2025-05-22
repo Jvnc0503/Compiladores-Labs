@@ -381,6 +381,9 @@ void EVALVisitor::visit(StatementList *stm) {
     list<Stm *>::iterator it;
     for (it = stm->stms.begin(); it != stm->stms.end(); it++) {
         (*it)->accept(this);
+        if (retcall) {
+            return;
+        }
     }
 }
 
