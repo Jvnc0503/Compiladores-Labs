@@ -1,16 +1,9 @@
-//
-// Created by Jvnc on 6/3/2025.
-//
-
 #ifndef PARSER_H
 #define PARSER_H
-
-
+#include "scanner.h"
 
 class parser {
-
 };
-
 
 
 #endif //PARSER_H
