@@ -6,10 +6,12 @@
 struct Exp {
     enum BinaryOp { PLUS_OP, MINUS_OP, MUL_OP };
 
+    static std::string binarOpToChar(BinaryOp op);
+
     virtual ~Exp() = 0;
 };
 
-struct BinaryExp final : public Exp {
+struct BinaryExp final : Exp {
     Exp *left;
     Exp *right;
     BinaryOp op;
@@ -19,7 +21,7 @@ struct BinaryExp final : public Exp {
     ~BinaryExp() override;
 };
 
-struct NumberExp final : public Exp {
+struct NumberExp final : Exp {
     int value;
 
     NumberExp(int value);
@@ -27,7 +29,7 @@ struct NumberExp final : public Exp {
     ~NumberExp() override;
 };
 
-struct IdExp final : public Exp {
+struct IdExp final : Exp {
     std::string id;
 
     explicit IdExp(std::string id);
@@ -50,6 +52,14 @@ struct ModelBlock {
     explicit ModelBlock(std::list<Equation *> equations);
 
     ~ModelBlock();
+};
+
+struct VarBlock {
+    std::list<std::string> vars;
+
+    explicit VarBlock(std::list<std::string> vars);
+
+    ~VarBlock();
 };
 
 #endif //EXP_H

@@ -1,4 +1,14 @@
+#include <string>
 #include "exp.h"
+
+std::string Exp::binarOpToChar(const BinaryOp op) {
+    switch (op) {
+        case PLUS_OP: return "+";
+        case MINUS_OP: return "-";
+        case MUL_OP: return "*";
+        default: return "$";
+    }
+}
 
 BinaryExp::BinaryExp(Exp *l, Exp *r, const BinaryOp op) : left(l), right(r), op(op) {
 }
@@ -34,4 +44,9 @@ ModelBlock::~ModelBlock() {
         delete eq;
     }
 }
+
+VarBlock::VarBlock(std::list<std::string> vars) : vars(std::move(vars)) {
+}
+
+VarBlock::~VarBlock() = default;
 
