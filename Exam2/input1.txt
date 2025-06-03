@@ -1,0 +1,7 @@
+var x, y, z;
+model;
+    2*x + 3*y + z = 7;
+    x - y = 5;
+    x + z = 2;
+end;
+solve;

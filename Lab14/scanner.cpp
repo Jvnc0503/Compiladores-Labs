@@ -4,7 +4,7 @@
 #include "scanner.h"
 using namespace std;
 
-Scanner::Scanner(const char *s): input(s), first(0), current(0) {
+Scanner::Scanner(const char *in_s): input(in_s), first(0), current(0) {
 }
 
 bool is_white_space(char c) {
