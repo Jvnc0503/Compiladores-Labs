@@ -72,15 +72,19 @@ void Scanner::test() {
     Token *current;
     std::cout << "Starting Scanner:\n\n";
     while ((current = nextToken())->type != Token::FINISH) {
-        if (current->type == Token::FINISH) {
+        if (current->type == Token::ERROR) {
             std::cout << "Scanner error - Invalid character: " << current->text << '\n';
-            delete current;
-            exit(0);
+            break;
         }
         std::cout << *current << '\n';
         delete current;
     }
+    std::cout << *current << '\n';
+    if (current->type != Token::FINISH) {
+        std::cout << "Scanner did not finish correctly.\n";
+    } else {
+        std::cout << "Scanner finished successfully.\n";
+    }
     delete current;
-    std::cout << "TOKEN(FINISH)\n\nScanner finished successfully.\n";
     reset();
 }

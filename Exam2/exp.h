@@ -62,4 +62,9 @@ struct VarBlock {
     ~VarBlock();
 };
 
+struct Program {
+    VarBlock *var_block;
+    ModelBlock *model_block;
+};
+
 #endif //EXP_H

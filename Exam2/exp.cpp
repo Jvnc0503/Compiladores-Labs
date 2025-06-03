@@ -1,6 +1,8 @@
 #include <string>
 #include "exp.h"
 
+Exp::~Exp() = default;
+
 std::string Exp::binarOpToChar(const BinaryOp op) {
     switch (op) {
         case PLUS_OP: return "+";
@@ -28,7 +30,7 @@ IdExp::IdExp(std::string id) : id(std::move(id)) {
 
 IdExp::~IdExp() = default;
 
-Equation::Equation(Exp *l, Exp *r) {
+Equation::Equation(Exp *l, Exp *r) : left(l), right(r) {
 }
 
 Equation::~Equation() {
