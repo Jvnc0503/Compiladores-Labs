@@ -21,7 +21,7 @@ Token *Scanner::nextToken() {
         while (current < input.length() && isdigit(input[current])) {
             current++;
         }
-        return new Token(Token::INT, input, first, current - first);
+        return new Token(Token::NUM, input, first, current - first);
     }
     if (isalpha(c)) {
         current++;
