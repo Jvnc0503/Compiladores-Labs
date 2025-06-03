@@ -9,4 +9,6 @@ add_executable(Exam2 main.cpp
         token.h
         token.cpp
         parser.h
-        parser.cpp)
+        parser.cpp
+        exp.h
+        exp.cpp)
