@@ -13,6 +13,8 @@ struct Exp {
     static std::string binarOpToChar(BinaryOp op);
 
     virtual ~Exp() = 0;
+
+    virtual int accept(Visitor *visitor) = 0;
 };
 
 struct BinaryExp final : Exp {
@@ -24,7 +26,7 @@ struct BinaryExp final : Exp {
 
     ~BinaryExp() override;
 
-    int accept(Visitor *visitor);
+    int accept(Visitor *visitor) override;
 };
 
 struct NumberExp final : Exp {
@@ -34,7 +36,7 @@ struct NumberExp final : Exp {
 
     ~NumberExp() override;
 
-    int accept(Visitor *visitor);
+    int accept(Visitor *visitor) override;
 };
 
 struct IdExp final : Exp {
@@ -44,7 +46,7 @@ struct IdExp final : Exp {
 
     ~IdExp() override;
 
-    int accept(Visitor *visitor);
+    int accept(Visitor *visitor) override;
 };
 
 struct Equation {

@@ -1,7 +1,10 @@
 #ifndef VISITOR_H
 #define VISITOR_H
+#include <set>
+
 #include "exp.h"
-#include <list>
+#include <vector>
+#include <unordered_map>
 
 struct BinaryExp;
 struct NumberExp;
@@ -12,6 +15,8 @@ struct VarBlock;
 struct Program;
 
 struct Visitor {
+    virtual ~Visitor() = default;
+
     virtual int visit(BinaryExp *exp) = 0;
 
     virtual int visit(NumberExp *exp) = 0;
@@ -25,8 +30,13 @@ struct Visitor {
     virtual void visit(VarBlock *vb) = 0;
 };
 
-struct PythonVisitor : Visitor {
-    void imprimir(Program *program);
+struct PythonVisitor final : Visitor {
+    int equation_idx = 0;
+    std::set<std::string> variables;
+    std::vector<std::unordered_map<std::string, int> > coefs;
+    std::vector<int> results;
+
+    void imprimir(const Program *program);
 
     int visit(BinaryExp *exp) override;
 
