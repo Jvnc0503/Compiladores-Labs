@@ -2,6 +2,10 @@
 #define EXP_H
 #include <string>
 #include <list>
+#include "visitor.h"
+
+struct Visitor;
+struct PythonVisitor;
 
 struct Exp {
     enum BinaryOp { PLUS_OP, MINUS_OP, MUL_OP };
@@ -19,14 +23,18 @@ struct BinaryExp final : Exp {
     BinaryExp(Exp *l, Exp *r, BinaryOp op);
 
     ~BinaryExp() override;
+
+    int accept(Visitor *visitor);
 };
 
 struct NumberExp final : Exp {
     int value;
 
-    NumberExp(int value);
+    explicit NumberExp(int value);
 
     ~NumberExp() override;
+
+    int accept(Visitor *visitor);
 };
 
 struct IdExp final : Exp {
@@ -35,6 +43,8 @@ struct IdExp final : Exp {
     explicit IdExp(std::string id);
 
     ~IdExp() override;
+
+    int accept(Visitor *visitor);
 };
 
 struct Equation {
@@ -44,6 +54,8 @@ struct Equation {
     Equation(Exp *l, Exp *r);
 
     ~Equation();
+
+    int accept(Visitor *visitor);
 };
 
 struct ModelBlock {
@@ -52,6 +64,8 @@ struct ModelBlock {
     explicit ModelBlock(std::list<Equation *> equations);
 
     ~ModelBlock();
+
+    int accept(Visitor *visitor);
 };
 
 struct VarBlock {
@@ -60,6 +74,8 @@ struct VarBlock {
     explicit VarBlock(std::list<std::string> vars);
 
     ~VarBlock();
+
+    int accept(Visitor *visitor);
 };
 
 struct Program {

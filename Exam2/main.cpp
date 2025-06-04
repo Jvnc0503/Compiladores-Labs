@@ -2,6 +2,7 @@
 #include <fstream>
 #include "scanner.h"
 #include "parser.h"
+#include "visitor.h"
 using namespace std;
 
 int main(const int argc, const char *argv[]) {
@@ -31,8 +32,12 @@ int main(const int argc, const char *argv[]) {
         std::cout << "Iniciando parsing:\n";
         Program *program = parser.parseProgram();
         std::cout << "Parsing exitoso\n\n";
+        std::cout << "Iniciando Visitor:\n";
+        PythonVisitor pythonVisitor;
+        std::cout << "Python codegen:\n";
+        pythonVisitor.imprimir(program);
     } catch (const std::exception &e) {
-        std::cout << "Error durante el parsing: " << e.what() << '\n';
+        std::cout << "Error durante la ejecución: " << e.what() << '\n';
         return 1;
     }
     return 0;

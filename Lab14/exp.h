@@ -250,7 +250,6 @@ public:
     Program() = default;
 
     Program(VarDecList *vardecs, FunDecList *fundecs): vardecs(vardecs), fundecs(fundecs) {
-        ;
     }
 
     ~Program();

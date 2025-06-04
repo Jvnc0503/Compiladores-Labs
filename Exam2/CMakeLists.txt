@@ -11,4 +11,6 @@ add_executable(Exam2 main.cpp
         parser.h
         parser.cpp
         exp.h
-        exp.cpp)
+        exp.cpp
+        visitor.h
+        visitor.cpp)
