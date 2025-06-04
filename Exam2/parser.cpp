@@ -37,34 +37,109 @@ Parser::Parser(Scanner *scanner) : scanner(scanner),
                                    previous(nullptr) {
     if (current->type == Token::ERROR) {
         std::cout << "Error on the first token: " << current->type << '\n';
-        exit(0);
+        exit(1);
     }
 }
 
 Program *Parser::parseProgram() {
-    return nullptr;
+    VarBlock *varBlock = parseVarBlock();
+    ModelBlock *modelBlock = parseModelBlock();
+    return new Program(varBlock, modelBlock);
 }
 
 VarBlock *Parser::parseVarBlock() {
-    return nullptr;
+    if (!match(Token::VAR)) {
+        std::cout << "Error: expected 'var' at the beginning of the variable block.\n";
+        exit(1);
+    }
+    std::list<std::string> vars;
+    while (match(Token::ID) && !match(Token::SEMICOLON)) {
+        vars.push_back(previous->text);
+        if (!match(Token::COMMA) && !match(Token::SEMICOLON)) {
+            std::cout << "Error: expected ',' or ';' after variable identifier.\n";
+            exit(1);
+        }
+    }
+    return new VarBlock(vars);
 }
 
 ModelBlock *Parser::parseModelBlock() {
-    return nullptr;
+    if (!match(Token::MODEL)) {
+        std::cout << "Error: expected 'model' at the beginning of the model block.\n";
+        exit(1);
+    }
+    if (!match(Token::SEMICOLON)) {
+        std::cout << "Error: expected ';' after 'model'.\n";
+        exit(1);
+    }
+    std::list<Equation *> equations;
+    while (!match(Token::END)) {
+        Equation *e = parseEquation();
+        if (!match(Token::SEMICOLON)) {
+            std::cout << "Error: expected ';' after equation.\n";
+            exit(1);
+        }
+        equations.push_back(e);
+    }
+    if (!match(Token::SEMICOLON)) {
+        std::cout << "Error: expected ';' after end.\n";
+        exit(1);
+    }
+    return new ModelBlock(equations);
 }
 
 Equation *Parser::parseEquation() {
-    return nullptr;
+    Exp *left = parseExp();
+    if (!match(Token::EQUAL)) {
+        std::cout << "Error: expected '=' after left-hand side expression.\n";
+        exit(1);
+    }
+    Exp *right = parseExp();
+    return new Equation(left, right);
 }
 
 Exp *Parser::parseExp() {
-    return nullptr;
+    Exp *left = parseTerm();
+    while (match(Token::PLUS) || match(Token::MINUS)) {
+        Exp::BinaryOp op;
+        switch (previous->type) {
+            case Token::PLUS: op = Exp::PLUS_OP;
+                break;
+            case Token::MINUS: op = Exp::MINUS_OP;
+                break;
+            default: std::cout << "Error: unrecognized operator: " << previous->text << '\n';
+                exit(1);
+        }
+        Exp *right = parseTerm();
+        left = new BinaryExp(left, right, op);
+    }
+    return left;
 }
 
 Exp *Parser::parseTerm() {
-    return nullptr;
+    Exp *left = parseFactor();
+    while (match(Token::MUL)) {
+        Exp *right = parseFactor();
+        left = new BinaryExp(left, right, BinaryExp::MUL_OP);
+    }
+    return left;
 }
 
 Exp *Parser::parseFactor() {
-    return nullptr;
+    if (match(Token::NUM)) {
+        return new NumberExp(std::stoi(previous->text));
+    }
+    if (match(Token::ID)) {
+        return new IdExp(previous->text);
+    }
+    if (match(Token::LP)) {
+        Exp *e = parseExp();
+        if (!match(Token::RP)) {
+            std::cout << "Error: expected ')' after '(' and expression.\n";
+            exit(1);
+        }
+        return e;
+    }
+    std::cout << "Error: expected a number, identifier, or '('. Found: " << current->text << '\n';
+    exit(1);
 }

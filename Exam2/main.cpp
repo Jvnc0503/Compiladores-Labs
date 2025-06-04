@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "scanner.h"
+#include "parser.h"
 using namespace std;
 
 int main(const int argc, const char *argv[]) {
@@ -23,9 +24,16 @@ int main(const int argc, const char *argv[]) {
     infile.close();
 
     Scanner scanner(input.c_str());
-
-    string input_copy = input;
-
     scanner.test();
+
+    Parser parser(&scanner);
+    try {
+        std::cout << "Iniciando parsing:\n";
+        Program *program = parser.parseProgram();
+        std::cout << "Parsing exitoso\n\n";
+    } catch (const std::exception &e) {
+        std::cout << "Error durante el parsing: " << e.what() << '\n';
+        return 1;
+    }
     return 0;
 }

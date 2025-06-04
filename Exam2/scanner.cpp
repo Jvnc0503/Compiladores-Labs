@@ -43,7 +43,7 @@ Token *Scanner::nextToken() {
         }
         return new Token(Token::ID, word, 0, word.length());
     }
-    if (strchr(",;=+-*", c)) {
+    if (strchr(",;=+-*()", c)) {
         current++;
         switch (c) {
             case ',': return new Token(Token::COMMA, c);
@@ -52,6 +52,8 @@ Token *Scanner::nextToken() {
             case '+': return new Token(Token::PLUS, c);
             case '-': return new Token(Token::MINUS, c);
             case '*': return new Token(Token::MUL, c);
+            case '(': return new Token(Token::LP, c);
+            case ')': return new Token(Token::RP, c);
             default:
                 std::cout << "Should not reach here with operator: " << c << '\n';
                 exit(0);

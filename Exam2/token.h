@@ -5,7 +5,7 @@
 
 struct Token {
     enum Type {
-        VAR, ID, COMMA, SEMICOLON, MODEL, END, EQUAL, PLUS, MINUS, MUL, NUM, SOLVE, FINISH, ERROR
+        VAR, ID, COMMA, SEMICOLON, MODEL, END, EQUAL, PLUS, MINUS, MUL, NUM, LP, RP, SOLVE, FINISH, ERROR
     };
 
     Type type;

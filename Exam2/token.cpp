@@ -36,6 +36,10 @@ std::ostream &operator<<(std::ostream &outs, const Token &tok) {
             break;
         case Token::NUM: outs << "TOKEN(NUM)";
             break;
+        case Token::LP: outs << "TOKEN(LP)";
+            break;
+        case Token::RP: outs << "TOKEN(RP)";
+            break;
         case Token::SOLVE: outs << "TOKEN(SOLVE)";
             break;
     }
