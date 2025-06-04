@@ -7,7 +7,7 @@ void PythonVisitor::imprimir(const Program *program) {
     program->var_block->accept(this);
     program->model_block->accept(this);
     std::cout << "A = np.array([\n";
-    for (auto &coef : coefs) {
+    for (auto &coef: coefs) {
         std::cout << "[";
         for (const auto &var: variables) {
             std::cout << coef[var];
@@ -44,7 +44,7 @@ int PythonVisitor::visit(BinaryExp *exp) {
 }
 
 int PythonVisitor::visit(NumberExp *exp) {
-    return exp->value();
+    return exp->value;
 }
 
 int PythonVisitor::visit(IdExp *exp) {
