@@ -128,6 +128,7 @@ void GenCodeVisitor::genCode(const Program *program) {
     file << "main:\n";
     file << " pushq %rbp\n";
     file << " movq %rsp, %rbp\n";
+    file << " subq $8, %rsp\n";
 
     for (const auto s: program->slist) {
         s->accept(this);
