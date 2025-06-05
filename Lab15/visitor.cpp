@@ -1,6 +1,9 @@
 #include <iostream>
 #include "exp.h"
 #include "visitor.h"
+
+#include <filesystem>
+#include <fstream>
 #include <unordered_map>
 using namespace std;
 
@@ -113,4 +116,74 @@ void EVALVisitor::ejecutar(Program *program) {
     for (Stm *s: program->slist) {
         s->accept(this);
     }
-};
+}
+
+// GenCodeVisitor
+
+void GenCodeVisitor::genCode(const Program *program) {
+    file << ".data\n";
+    file << "print_fmt: .string \"%ld\\n\"\n";
+    file << ".text\n";
+    file << ".globl main\n";
+    file << "main:\n";
+    file << " pushq %rbp\n";
+    file << " movq %rsp, %rbp\n";
+
+    for (const auto s: program->slist) {
+        s->accept(this);
+    }
+
+    file << " movl $0, %eax\n";
+    file << " leave\n";
+    file << " ret\n";
+    file << ".section .note.GNU-stack,\"\",@progbits\n";
+    file.close();
+    cout << "Codigo generado en: " << std::filesystem::absolute(output) << endl;
+}
+
+int GenCodeVisitor::visit(BinaryExp *exp) {
+    exp->left->accept(this);
+    file << " pushq %rax\n";
+    exp->right->accept(this);
+    file << " movq %rax, %rcx\n";
+    file << " popq %rax\n";
+    switch (Exp::binopToChar(exp->op)) {
+        case '+':
+            file << " addq %rcx, %rax\n";
+            break;
+        case '-':
+            file << " subq %rcx, %rax\n";
+            break;
+        case '*':
+            file << " imulq %rcx, %rax\n";
+            break;
+        default:
+            exit(2);
+    }
+    return 0;
+}
+
+int GenCodeVisitor::visit(NumberExp *exp) {
+    file << " movq $" << exp->value << ", %rax\n";
+    return 0;
+}
+
+int GenCodeVisitor::visit(IdentifierExp *exp) {
+    file << " movq " << map[exp->name] << "(%rbp), %rax\n";
+    return 0;
+}
+
+void GenCodeVisitor::visit(AssignStatement *stm) {
+    stm->rhs->accept(this);
+    map[stm->id] = counter * (-8);
+    counter++;
+    file << " movq %rax, " << map[stm->id] << "(%rbp)\n";
+}
+
+void GenCodeVisitor::visit(PrintStatement *stm) {
+    stm->e->accept(this);
+    file << " movq %rax, %rsi\n";
+    file << " leaq print_fmt(%rip), %rdi\n";
+    file << " movl $0, %eax\n";
+    file << " call printf@PLT\n";
+}

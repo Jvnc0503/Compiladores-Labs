@@ -40,11 +40,16 @@ int main(int argc, const char *argv[]) {
         cout << "Iniciando Visitor:" << endl;
         PrintVisitor printVisitor;
         EVALVisitor evalVisitor;
+        GenCodeVisitor genCodeVisitor;
         cout << "IMPRIMIR:" << endl;
         printVisitor.imprimir(program);
         cout << endl;
         cout << "EJECUTAR:" << endl;
         evalVisitor.ejecutar(program);
+        cout << endl;
+        cout << "CODEGEN: \n";
+        genCodeVisitor.genCode(program);
+
         delete program;
     } catch (const exception &e) {
         cout << "Error durante la ejecución: " << e.what() << endl;

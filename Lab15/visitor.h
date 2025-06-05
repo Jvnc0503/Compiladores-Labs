@@ -2,6 +2,10 @@
 #define VISITOR_H
 #include "exp.h"
 #include <list>
+#include <string>
+#include <fstream>
+#include <filesystem>
+#include <unordered_map>
 
 class BinaryExp;
 class NumberExp;
@@ -41,6 +45,34 @@ public:
 class EVALVisitor : public Visitor {
 public:
     void ejecutar(Program *program);
+
+    int visit(BinaryExp *exp) override;
+
+    int visit(NumberExp *exp) override;
+
+    int visit(IdentifierExp *exp) override;
+
+    void visit(AssignStatement *stm) override;
+
+    void visit(PrintStatement *stm) override;
+};
+
+#define output "../output.s"
+
+class GenCodeVisitor : public Visitor {
+    std::ofstream file;
+    std::unordered_map<std::string, int> map;
+    int counter = 1;
+
+public:
+    GenCodeVisitor() {
+        if (std::filesystem::exists(output)) {
+            std::filesystem::remove(output);
+        }
+        file = std::ofstream(output);
+    }
+
+    void genCode(const Program *program);
 
     int visit(BinaryExp *exp) override;
 
