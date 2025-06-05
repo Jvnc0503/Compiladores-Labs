@@ -14,6 +14,16 @@ main:
  movq -16(%rbp), %rax
  movq %rax, %rcx
  popq %rax
+ addq %rcx, %rax
+ movq %rax, %rsi
+ leaq print_fmt(%rip), %rdi
+ movl $0, %eax
+ call printf@PLT
+ movq -8(%rbp), %rax
+ pushq %rax
+ movq -16(%rbp), %rax
+ movq %rax, %rcx
+ popq %rax
  imulq %rcx, %rax
  movq %rax, %rsi
  leaq print_fmt(%rip), %rdi
