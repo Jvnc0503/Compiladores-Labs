@@ -1,0 +1,8 @@
+var int x,y;
+x = 10;
+y = 20;
+if x<y then 
+print(100)
+else
+print(200)
+endif
