@@ -39,6 +39,10 @@ int main(int argc, const char *argv[]) {
         cout << "Parsing exitoso" << endl << endl;
         cout << "Iniciando Visitor:" << endl;
 
+        PrintVisitor printer;
+        cout << "AST:" << endl;
+        printer.imprimir(program);
+
         TypeCheckerVisitor typechecker;
         cout << "Variables:" << endl;
         typechecker.revisar(program);

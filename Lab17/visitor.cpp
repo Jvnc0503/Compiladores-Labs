@@ -96,7 +96,6 @@ int PrintVisitor::visit(IdentifierExp *exp) {
 int PrintVisitor::visit(AssignStatement *stm) {
     cout << stm->id << " = ";
     stm->rhs->accept(this);
-    cout << ";";
     return 0;
 }
 
@@ -121,24 +120,37 @@ int PrintVisitor::visit(IfStatement *stm) {
 }
 
 int PrintVisitor::visit(WhileStatement *stm) {
+    cout << "while ";
+    stm->condition->accept(this);
+    cout << " do";
+    stm->body->accept(this);
+    cout << "endwhile\n";
     return 0;
 }
 
 int PrintVisitor::visit(ForStatement *stm) {
+    cout << "for (";
+    stm->init->accept(this);
+    cout << ", ";
+    stm->condition->accept(this);
+    cout << ", ";
+    stm->increment->accept(this);
+    cout << ")";
+    stm->body->accept(this);
+    cout << "endfor";
     return 0;
 }
 
 int PrintVisitor::imprimir(Program *program) {
     program->body->accept(this);
     return 0;
-};
-
+}
 
 int PrintVisitor::visit(VarDec *stm) {
     cout << "var ";
     cout << stm->type;
     cout << " ";
-    for (auto i: stm->vars) {
+    for (const auto &i: stm->vars) {
         cout << i;
         if (i != stm->vars.back()) cout << ", ";
     }
@@ -155,9 +167,12 @@ int PrintVisitor::visit(VarDecList *stm) {
 }
 
 int PrintVisitor::visit(StatementList *stm) {
-    for (auto i: stm->stms) {
+    for (const auto &i: stm->stms) {
         i->accept(this);
-        cout << endl;
+        if (i != stm->stms.back()) {
+            cout << ';';
+        }
+        cout << '\n';
     }
     return 0;
 }
@@ -169,6 +184,7 @@ int PrintVisitor::visit(Body *stm) {
     return 0;
 }
 
+// GenCode
 
 int GenCodeVisitor::gencode(Program *program) {
     typeChecker.revisar(program);
@@ -277,7 +293,7 @@ int GenCodeVisitor::visit(ForStatement *stm) {
 }
 
 int GenCodeVisitor::visit(VarDec *stm) {
-    for (auto i: stm->vars) {
+    for (const auto& i: stm->vars) {
         memoria[i] = -8 * cantidad;
         cantidad++;
     }
@@ -304,6 +320,7 @@ int GenCodeVisitor::visit(Body *b) {
     return 0;
 }
 
+// TypeChecker
 
 int TypeCheckerVisitor::revisar(Program *program) {
     program->body->accept(this);
@@ -341,10 +358,12 @@ int TypeCheckerVisitor::visit(IfStatement *stm) {
 }
 
 int TypeCheckerVisitor::visit(WhileStatement *stm) {
+    stm->body->accept(this);
     return 0;
 }
 
 int TypeCheckerVisitor::visit(ForStatement *stm) {
+    stm->body->accept(this);
     return 0;
 }
 
