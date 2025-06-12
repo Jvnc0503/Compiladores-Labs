@@ -6,7 +6,7 @@ endfor;
 
 y = 0;
 
-while (y < 5)
+while (y < 5) do
     y = y + 1;
     print(y)
 endwhile

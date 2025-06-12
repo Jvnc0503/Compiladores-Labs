@@ -113,9 +113,9 @@ public:
 class WhileStatement final : public Stm {
 public:
     Exp *condition;
-    Exp *body;
+    Body *body;
 
-    WhileStatement(Exp *condition, Exp *body);
+    WhileStatement(Exp *condition, Body *body);
 
     ~WhileStatement() override;
 
@@ -127,9 +127,9 @@ public:
     AssignStatement *init;
     Exp *condition;
     AssignStatement *increment;
-    Exp *body;
+    Body *body;
 
-    ForStatement(AssignStatement *init, Exp *condition, AssignStatement *increment, Exp *body);
+    ForStatement(AssignStatement *init, Exp *condition, AssignStatement *increment, Body *body);
 
     ~ForStatement() override;
 

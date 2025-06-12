@@ -59,7 +59,7 @@ IfStatement::~IfStatement() {
     delete els;
 }
 
-WhileStatement::WhileStatement(Exp *condition, Exp *body): condition(condition), body(body) {
+WhileStatement::WhileStatement(Exp *condition, Body *body): condition(condition), body(body) {
 }
 
 WhileStatement::~WhileStatement() {
@@ -67,7 +67,7 @@ WhileStatement::~WhileStatement() {
     delete body;
 }
 
-ForStatement::ForStatement(AssignStatement *init, Exp *condition, AssignStatement *increment, Exp *body): init(init),
+ForStatement::ForStatement(AssignStatement *init, Exp *condition, AssignStatement *increment, Body *body): init(init),
     condition(condition), increment(increment), body(body) {
 }
 

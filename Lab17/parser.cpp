@@ -110,7 +110,6 @@ Program *Parser::parseProgram() {
     return new Program(b);
 }
 
-
 Stm *Parser::parseStatement() {
     Stm *s = NULL;
     Exp *e = NULL;
@@ -159,6 +158,65 @@ Stm *Parser::parseStatement() {
             exit(1);
         }
         s = new IfStatement(e, tb, fb);
+    } else if (match(Token::WHILE)) {
+        e = parseCExp();
+        if (!match(Token::DO)) {
+            cout << "Error: se esperaba 'do' después de la expresión." << endl;
+            exit(1);
+        }
+        tb = parseBody();
+        if (!match(Token::ENDWHILE)) {
+            cout << "Error: se esperaba 'else' después del cuerpo del while." << endl;
+            exit(1);
+        }
+        s = new WhileStatement(e, tb);
+    } else if (match(Token::FOR)) {
+        if (!match(Token::PI)) {
+            cout << "Error: se esperaba '(' después de 'for'." << endl;
+            exit(1);
+        }
+        std::string lex;
+        if (!match(Token::ID)) {
+            cout << "Error: se esperaba un identificador después de 'for'." << endl;
+            exit(1);
+        }
+        lex = previous->text;
+        if (!match(Token::ASSIGN)) {
+            cout << "Error: se esperaba un '=' después del identificador." << endl;
+            exit(1);
+        }
+        e = parseCExp();
+        auto *assignment = new AssignStatement(lex, e);
+        if (!match(Token::COMA)) {
+            cout << "Error: se esperaba ',' después de la asignación." << endl;
+            exit(1);
+        }
+        Exp *condition = parseCExp();
+        if (!match(Token::COMA)) {
+            cout << "Error: se esperaba ',' después de la condición." << endl;
+            exit(1);
+        }
+        if (!match(Token::ID)) {
+            cout << "Error: se esperaba un identificador después de la coma." << endl;
+            exit(1);
+        }
+        lex = previous->text;
+        if (!match(Token::ASSIGN)) {
+            cout << "Error: se esperaba un '=' después del identificador." << endl;
+            exit(1);
+        }
+        e = parseCExp();
+        auto *increment = new AssignStatement(lex, e);
+        if (!match(Token::PD)) {
+            cout << "Error: se esperaba ')' después de la asignación." << endl;
+            exit(1);
+        }
+        tb = parseBody();
+        if (!match(Token::ENDFOR)) {
+            cout << "Error: se esperaba 'endfor' al final del bucle for." << endl;
+            exit(1);
+        }
+        s = new ForStatement(assignment, condition, increment, tb);
     } else {
         cout << "Error: Se esperaba un identificador o 'print', pero se encontró: " << *current << endl;
         exit(1);
