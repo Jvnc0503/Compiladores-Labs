@@ -209,7 +209,6 @@ int GenCodeVisitor::gencode(Program *program) {
     return 0;
 }
 
-
 int GenCodeVisitor::visit(BinaryExp *exp) {
     exp->left->accept(this);
     cout << " pushq %rax" << endl;
@@ -277,41 +276,44 @@ int GenCodeVisitor::visit(PrintStatement *stm) {
 }
 
 int GenCodeVisitor::visit(IfStatement *stm) {
+    const int localCounter = ifCounter;
+    ifCounter++;
     stm->condition->accept(this);
     cout << " cmpq $0, %rax" << endl;
-    cout << " je else_" << ifCounter << endl;
+    cout << " je else_" << localCounter << endl;
     stm->then->accept(this);
-    cout << " jmp endif_" << ifCounter << endl;
-    cout << " else_" << ifCounter << ':' << endl;
+    cout << " jmp endif_" << localCounter << endl;
+    cout << " else_" << localCounter << ':' << endl;
     stm->els->accept(this);
-    cout << " endif_" << ifCounter << ':' << endl;
-    ifCounter++;
+    cout << " endif_" << localCounter << ':' << endl;
     return 0;
 }
 
 int GenCodeVisitor::visit(WhileStatement *stm) {
-    cout << " while_" << whileCounter << ':' << endl;
+    const int localCounter = whileCounter;
+    whileCounter++;
+    cout << " while_" << localCounter << ':' << endl;
     stm->condition->accept(this);
     cout << " cmpq $0, %rax" << endl;
-    cout << " je endwhile_" << whileCounter << endl;
+    cout << " je endwhile_" << localCounter << endl;
     stm->body->accept(this);
-    cout << " jmp while_" << whileCounter << endl;
-    cout << " endwhile_" << whileCounter << ':' << endl;
-    whileCounter++;
+    cout << " jmp while_" << localCounter << endl;
+    cout << " endwhile_" << localCounter << ':' << endl;
     return 0;
 }
 
 int GenCodeVisitor::visit(ForStatement *stm) {
+    const int localCounter = forCounter;
+    forCounter++;
     stm->init->accept(this);
-    cout << " for_" << forCounter << ':' << endl;
+    cout << " for_" << localCounter << ':' << endl;
     stm->condition->accept(this);
     cout << " cmpq $0, %rax" << endl;
-    cout << " je endfor_" << forCounter << endl;
+    cout << " je endfor_" << localCounter << endl;
     stm->body->accept(this);
     stm->increment->accept(this);
-    cout << " jmp for_" << forCounter << endl;
-    cout << " endfor_" << forCounter << ':' << endl;
-    forCounter++;
+    cout << " jmp for_" << localCounter << endl;
+    cout << " endfor_" << localCounter << ':' << endl;
     return 0;
 }
 

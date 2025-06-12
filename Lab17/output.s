@@ -56,6 +56,23 @@ main:
  cmpq $0, %rax
  je endwhile_1
  movq -16(%rbp), %rax
+ movq %rax, %rsi
+ leaq print_fmt(%rip), %rdi
+ movl $0, %eax
+ call printf@PLT
+ while_2:
+ movq -16(%rbp), %rax
+ pushq %rax
+ movq $1, %rax
+ movq %rax, %rcx
+ popq %rax
+ cmpq %rcx, %rax
+ movl $0, %eax
+ setl %al
+ movzbq %al, %rax
+ cmpq $0, %rax
+ je endwhile_2
+ movq -16(%rbp), %rax
  pushq %rax
  movq $1, %rax
  movq %rax, %rcx
@@ -67,6 +84,15 @@ main:
  leaq print_fmt(%rip), %rdi
  movl $0, %eax
  call printf@PLT
+ jmp while_2
+ endwhile_2:
+ movq -16(%rbp), %rax
+ pushq %rax
+ movq $1, %rax
+ movq %rax, %rcx
+ popq %rax
+ addq %rcx, %rax
+ movq %rax,-16 (%rbp)
  jmp while_1
  endwhile_1:
  movl $0, %eax

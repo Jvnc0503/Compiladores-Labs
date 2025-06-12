@@ -9,6 +9,10 @@ endfor;
 y = 0;
 
 while y < 5 do
-    y = y + 1;
-    print(y)
+    print(y);
+    while y < 1 do
+        y = y + 1;
+        print(y)
+    endwhile;
+    y = y + 1
 endwhile
