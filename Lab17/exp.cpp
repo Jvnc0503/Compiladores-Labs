@@ -59,6 +59,23 @@ IfStatement::~IfStatement() {
     delete els;
 }
 
+WhileStatement::WhileStatement(Exp *condition, Exp *body): condition(condition), body(body) {
+}
+
+WhileStatement::~WhileStatement() {
+    delete condition;
+    delete body;
+}
+
+ForStatement::ForStatement(AssignStatement *init, Exp *condition, AssignStatement *increment, Exp *body): init(init), condition(condition), increment(increment), body(body) {}
+
+ForStatement::~ForStatement() {
+    delete init;
+    delete condition;
+    delete increment;
+    delete body;
+}
+
 
 VarDec::VarDec(string type, list<string> ids): type(type), vars(ids) {
 }

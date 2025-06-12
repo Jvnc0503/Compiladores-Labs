@@ -110,6 +110,31 @@ public:
     ~IfStatement();
 };
 
+class WhileStatement final : public Stm {
+public:
+    Exp *condition;
+    Exp *body;
+
+    WhileStatement(Exp *condition, Exp *body);
+
+    ~WhileStatement() override;
+
+    int accept(Visitor *visitor) override;
+};
+
+class ForStatement final : public Stm {
+public:
+    AssignStatement *init;
+    Exp *condition;
+    AssignStatement *increment;
+    Exp *body;
+
+    ForStatement(AssignStatement *init, Exp *condition, AssignStatement *increment, Exp *body);
+
+    ~ForStatement() override;
+
+    int accept(Visitor *visitor) override;
+};
 
 class VarDec {
 public:

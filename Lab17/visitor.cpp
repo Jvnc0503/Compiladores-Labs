@@ -3,6 +3,7 @@
 #include "visitor.h"
 #include <unordered_map>
 #include <algorithm>
+#include <variant>
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -33,6 +34,16 @@ int PrintStatement::accept(Visitor *visitor) {
 }
 
 int IfStatement::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int WhileStatement::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int ForStatement::accept(Visitor *visitor) {
     visitor->visit(this);
     return 0;
 }
