@@ -42,6 +42,10 @@ int main(int argc, const char *argv[]) {
         cout << "IMPRIMIR:" << endl;
         printVisitor.imprimir(program);
         cout << endl;
+        GenCodeVisitor genCodeVisitor;
+        cout << "GenCode: \n";
+        genCodeVisitor.imprimir(program);
+        cout << '\n';
         delete program;
     } catch (const exception &e) {
         cout << "Error durante la ejecución: " << e.what() << endl;

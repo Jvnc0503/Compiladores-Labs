@@ -156,3 +156,93 @@ void PrintVisitor::visit(Body *stm) {
     cout << endl;
     stm->slist->accept(this);
 }
+
+// GenCode
+
+void GenCodeVisitor::imprimir(Program *program) {
+    file << ".data\n";
+    file << "print_fmt: .string \"%ld\\n\"\n";
+    file << ".text\n";
+    file << ".globl main\n";
+    file << "main:\n";
+    file << " pushq %rbp\n";
+    file << " movq %rsp, %rbp\n";
+    file << " subq $8, %rsp\n";
+
+
+    file << " movl $0, %eax\n";
+    file << " leave\n";
+    file << " ret\n";
+    file << ".section .note.GNU-stack,\"\",@progbits\n";
+    file.close();
+    cout << "Codigo generado en: " << std::filesystem::absolute(OUTPUT) << '\n';
+}
+
+int GenCodeVisitor::visit(IFExp *exp) {
+    return 0;
+}
+
+int GenCodeVisitor::visit(BinaryExp *exp) {
+    return 0;
+}
+
+int GenCodeVisitor::visit(NumberExp *exp) {
+    file << " movq $" << exp->value << ", %rax\n";
+    return 0;
+}
+
+int GenCodeVisitor::visit(BoolExp *exp) {
+    return 0;
+}
+
+int GenCodeVisitor::visit(IdentifierExp *exp) {
+    file << " movq " << variables[exp->name] << "(%rbp), %rax\n";
+    return 0;
+}
+
+void GenCodeVisitor::visit(AssignStatement *stm) {
+    stm->rhs->accept(this);
+    file << " movq %rax, " << variables[stm->id] << "(%rbp)\n";
+}
+
+void GenCodeVisitor::visit(PrintStatement *stm) {
+    stm->e->accept(this);
+    file << " movq %rax, %rsi\n";
+    file << " leaq print_fmt(%rip), %rdi\n";
+    file << " movl $0, %eax\n";
+    file << " call printf@PLT\n";
+}
+
+void GenCodeVisitor::visit(IfStatement *stm) {
+    stm->condition->accept(this);
+    cout << " cmpq $0, %rax" << endl;
+    cout << " je else1" << endl;
+    stm->then->accept(this);
+    cout << " jmp endif1" << endl;
+    cout << " else1:" << endl;
+    stm->els->accept(this);
+    cout << " endif1:" << endl;
+}
+
+void GenCodeVisitor::visit(VarDec *stm) {
+    for (const auto &v: stm->vars) {
+        variables[v] = 8 * counter;
+    }
+}
+
+void GenCodeVisitor::visit(VarDecList *stm) {
+    for (const auto &v: stm->vardecs) {
+        v->accept(this);
+    }
+}
+
+void GenCodeVisitor::visit(StatementList *stm) {
+    for (const auto &s: stm->stms) {
+        s->accept(this);
+    }
+}
+
+void GenCodeVisitor::visit(Body *b) {
+    b->vardecs->accept(this);
+    b->slist->accept(this);
+}

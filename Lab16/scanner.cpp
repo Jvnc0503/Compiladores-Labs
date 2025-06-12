@@ -119,10 +119,10 @@ void test_scanner(Scanner *scanner) {
     while ((current = scanner->nextToken())->type != Token::END) {
         if (current->type == Token::ERR) {
             cout << "Error en scanner - carácter inválido: " << current->text << endl;
-            break;
-        } else {
-            cout << *current << endl;
+            delete current;
+            exit(0);
         }
+        cout << *current << endl;
         delete current;
     }
     cout << "TOKEN(END)" << endl;

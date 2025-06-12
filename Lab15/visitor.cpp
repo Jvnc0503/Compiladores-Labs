@@ -68,7 +68,7 @@ void PrintVisitor::imprimir(Program *program) {
         s->accept(this);
         cout << endl;
     }
-};
+}
 
 ///////////////////////////////////////////////////////////////////////////////////
 int EVALVisitor::visit(BinaryExp *exp) {
