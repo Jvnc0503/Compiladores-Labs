@@ -120,6 +120,14 @@ int PrintVisitor::visit(IfStatement *stm) {
     return 0;
 }
 
+int PrintVisitor::visit(WhileStatement *stm) {
+    return 0;
+}
+
+int PrintVisitor::visit(ForStatement *stm) {
+    return 0;
+}
+
 int PrintVisitor::imprimir(Program *program) {
     program->body->accept(this);
     return 0;
@@ -260,6 +268,14 @@ int GenCodeVisitor::visit(IfStatement *stm) {
     return 0;
 }
 
+int GenCodeVisitor::visit(WhileStatement *stm) {
+    return 0;
+}
+
+int GenCodeVisitor::visit(ForStatement *stm) {
+    return 0;
+}
+
 int GenCodeVisitor::visit(VarDec *stm) {
     for (auto i: stm->vars) {
         memoria[i] = -8 * cantidad;
@@ -321,6 +337,14 @@ int TypeCheckerVisitor::visit(PrintStatement *stm) {
 int TypeCheckerVisitor::visit(IfStatement *stm) {
     stm->then->accept(this);
     stm->els->accept(this);
+    return 0;
+}
+
+int TypeCheckerVisitor::visit(WhileStatement *stm) {
+    return 0;
+}
+
+int TypeCheckerVisitor::visit(ForStatement *stm) {
     return 0;
 }
 

@@ -4,6 +4,8 @@
 #include "environment.h"
 #include <list>
 
+class ForStatement;
+class WhileStatement;
 class BinaryExp;
 class NumberExp;
 class BoolExp;
@@ -33,6 +35,10 @@ public:
 
     virtual int visit(IfStatement *stm) = 0;
 
+    virtual int visit(WhileStatement *stm) = 0;
+
+    virtual int visit(ForStatement *stm) = 0;
+
     virtual int visit(VarDec *stm) = 0;
 
     virtual int visit(VarDecList *stm) = 0;
@@ -59,6 +65,10 @@ public:
     int visit(PrintStatement *stm) override;
 
     int visit(IfStatement *stm) override;
+
+    int visit(WhileStatement *stm) override;
+
+    int visit(ForStatement *stm) override;
 
     int visit(VarDec *stm) override;
 
@@ -91,6 +101,10 @@ public:
 
     int visit(IfStatement *stm) override;
 
+    int visit(WhileStatement *stm) override;
+
+    int visit(ForStatement *stm) override;
+
     int visit(VarDec *stm) override;
 
     int visit(VarDecList *stm) override;
@@ -122,6 +136,10 @@ public:
     int visit(PrintStatement *stm) override;
 
     int visit(IfStatement *stm) override;
+
+    int visit(WhileStatement *stm) override;
+
+    int visit(ForStatement *stm) override;
 
     int visit(VarDec *stm) override;
 

@@ -1,0 +1,12 @@
+var int x, y;
+
+for (x = 0, x < 10, x = x + 1)
+    print(x + y)
+endfor;
+
+y = 0;
+
+while (y < 5)
+    y = y + 1;
+    print(y)
+endwhile
