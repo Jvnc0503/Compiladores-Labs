@@ -188,7 +188,11 @@ int PrintVisitor::visit(Body *stm) {
 
 int GenCodeVisitor::gencode(Program *program) {
     typeChecker.revisar(program);
-    cantidad = typeChecker.cantidad;
+    memoria.clear();
+    cantidad = 1;
+    ifCounter = 1;
+    whileCounter = 1;
+    forCounter = 1;
     cout << ".data" << endl;
     cout << "print_fmt: .string \"%ld \\n\" " << endl;
     cout << ".text " << endl;
@@ -196,7 +200,7 @@ int GenCodeVisitor::gencode(Program *program) {
     cout << "main: " << endl;
     cout << " pushq %rbp" << endl;
     cout << " movq %rsp, %rbp" << endl;
-    cout << " subq $" << cantidad * 8 << ", %rsp" << endl;
+    cout << " subq $" << typeChecker.cantidad * 8 << ", %rsp" << endl;
     program->body->accept(this);
     cout << " movl $0, %eax " << endl;
     cout << " leave" << endl;
@@ -275,25 +279,44 @@ int GenCodeVisitor::visit(PrintStatement *stm) {
 int GenCodeVisitor::visit(IfStatement *stm) {
     stm->condition->accept(this);
     cout << " cmpq $0, %rax" << endl;
-    cout << " je else_1" << endl;
+    cout << " je else_" << ifCounter << endl;
     stm->then->accept(this);
-    cout << " jmp endif_1" << endl;
-    cout << " else_1:" << endl;
+    cout << " jmp endif_" << ifCounter << endl;
+    cout << " else_" << ifCounter << ':' << endl;
     stm->els->accept(this);
-    cout << " endif_1:" << endl;
+    cout << " endif_" << ifCounter << ':' << endl;
+    ifCounter++;
     return 0;
 }
 
 int GenCodeVisitor::visit(WhileStatement *stm) {
+    cout << " while_" << whileCounter << ':' << endl;
+    stm->condition->accept(this);
+    cout << " cmpq $0, %rax" << endl;
+    cout << " je endwhile_" << whileCounter << endl;
+    stm->body->accept(this);
+    cout << " jmp while_" << whileCounter << endl;
+    cout << " endwhile_" << whileCounter << ':' << endl;
+    whileCounter++;
     return 0;
 }
 
 int GenCodeVisitor::visit(ForStatement *stm) {
+    stm->init->accept(this);
+    cout << " for_" << forCounter << ':' << endl;
+    stm->condition->accept(this);
+    cout << " cmpq $0, %rax" << endl;
+    cout << " je endfor_" << forCounter << endl;
+    stm->body->accept(this);
+    stm->increment->accept(this);
+    cout << " jmp for_" << forCounter << endl;
+    cout << " endfor_" << forCounter << ':' << endl;
+    forCounter++;
     return 0;
 }
 
 int GenCodeVisitor::visit(VarDec *stm) {
-    for (const auto& i: stm->vars) {
+    for (const auto &i: stm->vars) {
         memoria[i] = -8 * cantidad;
         cantidad++;
     }

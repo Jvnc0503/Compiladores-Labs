@@ -119,7 +119,10 @@ class GenCodeVisitor : public Visitor {
 public:
     TypeCheckerVisitor typeChecker;
     unordered_map<string, int> memoria;
-    int cantidad;
+    int cantidad = 1;
+    int ifCounter = 1;
+    int whileCounter = 1;
+    int forCounter = 1;
 
     int gencode(Program *program);
 
