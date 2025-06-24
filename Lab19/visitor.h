@@ -87,6 +87,7 @@ public:
     bool entornoFuncion = false;
     string nombreFuncion;
     stack<string> loopLabel;
+    stack<string> expectedReturn;
 
     void visit(Program *p) override;
 

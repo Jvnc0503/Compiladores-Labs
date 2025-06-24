@@ -236,7 +236,15 @@ int GenCodeVisitor::visit(BoolExp *exp) {
 }
 
 void GenCodeVisitor::visit(ReturnStatement *stm) {
-    stm->e->accept(this);
+    if (stm->e != nullptr) {
+        if (expectedReturn.top() == "void") {
+            cerr << "Error: la función " << nombreFuncion << " no debe retornar un valor." << endl;
+            exit(1);
+        }
+        stm->e->accept(this);
+    } else {
+        out << " movq $0, %rax\n";
+    }
     out << " jmp .end_" << nombreFuncion << endl;
 }
 
@@ -263,6 +271,7 @@ void GenCodeVisitor::visit(FunDec *f) {
     memoria.clear();
     offset = -8;
     nombreFuncion = f->nombre;
+    expectedReturn.push(f->tipo);
     vector<std::string> argRegs = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
     out << " .globl " << f->nombre << endl;
     out << f->nombre << ":" << endl;
@@ -284,6 +293,7 @@ void GenCodeVisitor::visit(FunDec *f) {
     out << "leave" << endl;
     out << "ret" << endl;
     entornoFuncion = false;
+    expectedReturn.pop();
 }
 
 int GenCodeVisitor::visit(FCallExp *exp) {
