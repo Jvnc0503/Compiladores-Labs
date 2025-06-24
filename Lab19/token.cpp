@@ -80,9 +80,6 @@ std::ostream &operator <<(std::ostream &outs, const Token &tok) {
             break;
         case Token::BREAK: outs << "TOKEN(BREAK)";
             break;
-        case Token::INT: outs << "TOKEN(INT)";
-            break;
-        case Token::VOID: outs << "TOKEN(VOID)";
             break;
         default: outs << "TOKEN(UNKNOWN)";
             break;

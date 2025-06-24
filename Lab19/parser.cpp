@@ -153,13 +153,30 @@ Stm *Parser::parseStatement() {
         exit(1);
     }
     if (match(Token::ID)) {
-        string lex = previous->text;
-        if (!match(Token::ASSIGN)) {
-            cout << "Error: se esperaba un '=' después del identificador." << endl;
+        string nombre = previous->text;
+        if (match(Token::ASSIGN)) {
+            e = parseCExp();
+            s = new AssignStatement(nombre, e);
+        } else if (match(Token::PI)) {
+            FCallStatement *fc = new FCallStatement();
+            vector<Exp *> lista;
+            if (!match(Token::PD)) {
+                lista.push_back(parseCExp());
+                while (match(Token::COMA)) {
+                    lista.push_back(parseCExp());
+                }
+                if (!match(Token::PD)) {
+                    cout << "Error: se esperaba un ')' después de la lista de argumentos." << endl;
+                    exit(1);
+                }
+            }
+            fc->argumentos = lista;
+            fc->nombre = nombre;
+            s = fc;
+        } else {
+            cerr << "Error: se esperaba un '=' o '(' después del identificador '" << nombre << "'." << endl;
             exit(1);
         }
-        e = parseCExp();
-        s = new AssignStatement(lex, e);
     } else if (match(Token::PRINT)) {
         if (!match(Token::PI)) {
             cout << "Error: se esperaba un '(' después de 'print'." << endl;
@@ -215,6 +232,8 @@ Stm *Parser::parseStatement() {
             exit(1);
         }
         s = new WhileStatement(e, tb);
+    } else if (match(Token::BREAK)) {
+        s = new BreakStatement();
     } else {
         cout << "Error: Se esperaba un identificador, 'print', o estructura válida, pero se encontró: " << *current <<
                 endl;
@@ -272,13 +291,15 @@ Exp *Parser::parseFactor() {
         if (match(Token::PI)) {
             FCallExp *fc = new FCallExp();
             vector<Exp *> lista;
-            lista.push_back(parseCExp());
-            while (match(Token::COMA)) {
-                lista.push_back(parseCExp());
-            }
             if (!match(Token::PD)) {
-                cout << "Error: se esperaba un ')' después de la lista de argumentos." << endl;
-                exit(1);
+                lista.push_back(parseCExp());
+                while (match(Token::COMA)) {
+                    lista.push_back(parseCExp());
+                }
+                if (!match(Token::PD)) {
+                    cout << "Error: se esperaba un ')' después de la lista de argumentos." << endl;
+                    exit(1);
+                }
             }
             fc->argumentos = lista;
             fc->nombre = nombre;

@@ -231,6 +231,34 @@ public:
     int accept(Visitor *visitor);
 };
 
+class BreakStatement : public Stm {
+public:
+    BreakStatement() {
+    }
+
+    ~BreakStatement() {
+    }
+
+    int accept(Visitor *visitor);
+};
+
+class FCallStatement : public Stm {
+public:
+    string nombre;
+    vector<Exp *> argumentos;
+
+    FCallStatement() {
+    }
+
+    ~FCallStatement() {
+        for (const auto &arg: argumentos) {
+            delete arg;
+        }
+    }
+
+    int accept(Visitor *visitor);
+};
+
 class Program {
 public:
     VarDecList *vardecs;

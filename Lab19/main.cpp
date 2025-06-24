@@ -29,6 +29,7 @@ int main(int argc, const char *argv[]) {
 
     string input_copy = input;
     Scanner scanner_test(input_copy.c_str());
+    test_scanner(&scanner_test);
     Parser parser(&scanner);
     try {
         Program *program = parser.parseProgram();
@@ -45,7 +46,6 @@ int main(int argc, const char *argv[]) {
         GenCodeVisitor codigo(outfile);
         codigo.generar(program);
         outfile.close();
-        delete program;
         delete program;
     } catch (const exception &e) {
         cout << "Error durante la ejecución: " << e.what() << endl;

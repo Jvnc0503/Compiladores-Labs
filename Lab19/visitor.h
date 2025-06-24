@@ -5,6 +5,9 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
+#include <stack>
+class FCallStatement;
+class BreakStatement;
 using namespace std;
 
 class BinaryExp;
@@ -53,6 +56,10 @@ public:
 
     virtual void visit(WhileStatement *stm) = 0;
 
+    virtual void visit(BreakStatement *stm) = 0;
+
+    virtual void visit(FCallStatement *stm) = 0;
+
     virtual void visit(VarDec *stm) = 0;
 
     virtual void visit(VarDecList *stm) = 0;
@@ -79,6 +86,7 @@ public:
     int labelcont = 0; //while y if
     bool entornoFuncion = false;
     string nombreFuncion;
+    stack<string> loopLabel;
 
     void visit(Program *p) override;
 
@@ -105,6 +113,10 @@ public:
     void visit(IfStatement *stm) override;
 
     void visit(WhileStatement *stm) override;
+
+    void visit(BreakStatement *stm) override;
+
+    void visit(FCallStatement *stm) override;
 
     void visit(VarDec *stm) override;
 

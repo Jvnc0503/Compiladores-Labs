@@ -63,10 +63,6 @@ Token *Scanner::nextToken() {
             token = new Token(Token::RETURN, word, 0, word.length());
         } else if (word == "break") {
             token = new Token(Token::BREAK, word, 0, word.length());
-        } else if (word == "int") {
-            token = new Token(Token::INT, word, 0, word.length());
-        } else if (word == "void") {
-            token = new Token(Token::VOID, word, 0, word.length());
         } else {
             token = new Token(Token::ID, word, 0, word.length());
         }

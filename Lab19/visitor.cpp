@@ -71,6 +71,16 @@ int ReturnStatement::accept(Visitor *visitor) {
     return 0;
 }
 
+int BreakStatement::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int FCallStatement::accept(Visitor *visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
 int FunDec::accept(Visitor *visitor) {
     visitor->visit(this);
     return 0;
@@ -163,7 +173,6 @@ int GenCodeVisitor::visit(BinaryExp *exp) {
     return 0;
 }
 
-
 void GenCodeVisitor::visit(AssignStatement *stm) {
     stm->rhs->accept(this);
     if (memoriaGlobal.count(stm->id))
@@ -181,14 +190,13 @@ void GenCodeVisitor::visit(PrintStatement *stm) {
             " call printf@PLT\n";
 }
 
-
 void GenCodeVisitor::visit(FunDecList *f) {
-    for (auto dec: f->Fundecs)
+    for (const auto &dec: f->Fundecs)
         dec->accept(this);
 }
 
 void GenCodeVisitor::visit(StatementList *stm) {
-    for (auto s: stm->stms)
+    for (const auto &s: stm->stms)
         s->accept(this);
 }
 
@@ -211,6 +219,7 @@ void GenCodeVisitor::visit(IfStatement *stm) {
 
 void GenCodeVisitor::visit(WhileStatement *stm) {
     int label = labelcont++;
+    loopLabel.push("endwhile_" + to_string(label));
     out << "while_" << label << ":" << endl;
     stm->condition->accept(this);
     out << " cmpq $0, %rax" << endl;
@@ -218,6 +227,7 @@ void GenCodeVisitor::visit(WhileStatement *stm) {
     stm->b->accept(this);
     out << " jmp while_" << label << endl;
     out << "endwhile_" << label << ":" << endl;
+    loopLabel.pop();
 }
 
 int GenCodeVisitor::visit(BoolExp *exp) {
@@ -228,6 +238,24 @@ int GenCodeVisitor::visit(BoolExp *exp) {
 void GenCodeVisitor::visit(ReturnStatement *stm) {
     stm->e->accept(this);
     out << " jmp .end_" << nombreFuncion << endl;
+}
+
+void GenCodeVisitor::visit(BreakStatement *stm) {
+    out << " jmp " << loopLabel.top() << '\n';
+}
+
+void GenCodeVisitor::visit(FCallStatement *stm) {
+    vector<std::string> argRegs = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
+    int size = stm->argumentos.size();
+    if (size > 6) {
+        cerr << "Error: demasiados argumentos para la llamada a la función " << stm->nombre << endl;
+        exit(1);
+    }
+    for (int i = 0; i < size; i++) {
+        stm->argumentos[i]->accept(this);
+        out << " movq %rax," << argRegs[i] << endl;
+    }
+    out << " call " << stm->nombre << endl;
 }
 
 void GenCodeVisitor::visit(FunDec *f) {
@@ -261,6 +289,10 @@ void GenCodeVisitor::visit(FunDec *f) {
 int GenCodeVisitor::visit(FCallExp *exp) {
     vector<std::string> argRegs = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
     int size = exp->argumentos.size();
+    if (size > 6) {
+        cerr << "Error: demasiados argumentos para la llamada a la función " << exp->nombre << endl;
+        exit(1);
+    }
     for (int i = 0; i < size; i++) {
         exp->argumentos[i]->accept(this);
         out << " movq %rax," << argRegs[i] << endl;
