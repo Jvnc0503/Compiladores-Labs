@@ -4,10 +4,10 @@ fun int main()
     while true do
         if i == 0 then
             i = i + 1;
-            break;
+            break
         endif;
         if i == 1 then
-            break;
+            break
         endif
     endwhile;
     return(0)

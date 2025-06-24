@@ -3,7 +3,7 @@ fun int main()
     x = 0;
     while true do
         if x < 1 then
-            break;
+            break
         endif
     endwhile;
     return(0)
