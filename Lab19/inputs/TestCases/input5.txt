@@ -1,0 +1,7 @@
+fun void vacia()
+endfun
+
+fun int main()
+    vacia();
+    return(0)
+endfun
