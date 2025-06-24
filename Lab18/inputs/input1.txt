@@ -1,0 +1,8 @@
+fun void main()
+    var int a, b, c;
+    a = 1;
+    b = 2;
+    c = a + b;
+    print(c);
+    return(0)
+endfun
