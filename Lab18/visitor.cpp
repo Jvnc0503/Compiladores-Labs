@@ -224,6 +224,8 @@ int GenCodeVisitor::visit(BoolExp *exp) {
 }
 
 void GenCodeVisitor::visit(ReturnStatement *stm) {
+    stm->e->accept(this);
+    out << " jmp .end_" << nombreFuncion << '\n';
 }
 
 void GenCodeVisitor::visit(FunDec *f) {
@@ -258,6 +260,15 @@ void GenCodeVisitor::visit(FunDec *f) {
 
 int GenCodeVisitor::visit(FCallExp *exp) {
     vector<std::string> argRegs = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
-
+    if (exp->argumentos.size() > 6) {
+        cerr << "More than six arguments are not supported\n";
+        exit(1);
+    }
+    const unsigned short numArgs = exp->argumentos.size();
+    for (unsigned short i = 0; i < numArgs; i++) {
+        exp->argumentos[i]->accept(this);
+        out << " mov %rax, " << argRegs[i] << '\n';
+    }
+    out << " call " << exp->nombre << '\n';
     return 0;
 }
