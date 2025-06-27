@@ -17,4 +17,6 @@ add_executable(Lab20
         token.cpp
         token.h
         visitor.cpp
-        visitor.h)
+        visitor.h
+        preprocessor.cpp
+        preprocessor.h)
