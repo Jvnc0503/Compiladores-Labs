@@ -285,7 +285,78 @@ Exp *Preprocessor::parseCExp() {
         }
         buffer.top() += previous->text;
         Exp *right = parseExpression();
-        left = new BinaryExp(left, right, op);
+
+        const auto lnum = dynamic_cast<NumberExp *>(left);
+        const auto rnum = dynamic_cast<NumberExp *>(right);
+        const auto lbool = dynamic_cast<BoolExp *>(left);
+        const auto rbool = dynamic_cast<BoolExp *>(right);
+        if (lnum && rnum) {
+            bool result;
+            switch (op) {
+                case LT_OP: result = lnum->value < rnum->value;
+                    break;
+                case LE_OP: result = lnum->value <= rnum->value;
+                    break;
+                case EQ_OP: result = lnum->value == rnum->value;
+                    break;
+                default:
+                    cerr << "Error: Operador de comparación no válido.\n";
+                    exit(1);
+            }
+            delete left;
+            delete right;
+            left = new BoolExp(result);
+            buffer.top() = result ? "true" : "false";
+        } else if (lbool && rbool) {
+            bool result;
+            switch (op) {
+                case LT_OP: result = lbool->value < rbool->value;
+                    break;
+                case LE_OP: result = lbool->value <= rbool->value;
+                    break;
+                case EQ_OP: result = lbool->value == rbool->value;
+                    break;
+                default:
+                    cerr << "Error: Operador de comparación no válido.\n";
+                    exit(1);
+            }
+            delete left;
+            delete right;
+            left = new BoolExp(result);
+            buffer.top() = result ? "true" : "false";
+        } else if (lnum && rbool) {
+            bool result;
+            switch (op) {
+                case LT_OP: result = lnum->value < rbool->value;
+                    break;
+                case LE_OP: result = lnum->value <= rbool->value;
+                    break;
+                case EQ_OP: result = lnum->value == rbool->value;
+                    break;
+                default:
+                    cerr << "Error: Operador de comparación no válido.\n";
+                    exit(1);
+            }
+        } else if (lbool && rnum) {
+            bool result;
+            switch (op) {
+                case LT_OP: result = lbool->value < rnum->value;
+                    break;
+                case LE_OP: result = lbool->value <= rnum->value;
+                    break;
+                case EQ_OP: result = lbool->value == rnum->value;
+                    break;
+                default:
+                    cerr << "Error: Operador de comparación no válido.\n";
+                    exit(1);
+            }
+            delete left;
+            delete right;
+            left = new BoolExp(result);
+            buffer.top() = result ? "true" : "false";
+        } else {
+            left = new BinaryExp(left, right, op);
+        }
     }
     const std::string local = buffer.top();
     buffer.pop();
@@ -303,8 +374,28 @@ Exp *Preprocessor::parseExpression() {
 
         const auto lnum = dynamic_cast<NumberExp *>(left);
         const auto rnum = dynamic_cast<NumberExp *>(right);
+        const auto lbool = dynamic_cast<BoolExp *>(left);
+        const auto rbool = dynamic_cast<BoolExp *>(right);
         if (lnum && rnum) {
             const int result = (op == PLUS_OP) ? lnum->value + rnum->value : lnum->value - rnum->value;
+            delete left;
+            delete right;
+            left = new NumberExp(result);
+            buffer.top() = std::to_string(result);
+        } else if (lbool && rbool) {
+            const int result = (op == PLUS_OP) ? lbool->value + rbool->value : lbool->value - rbool->value;
+            delete left;
+            delete right;
+            left = new BoolExp(result);
+            buffer.top() = std::to_string(result);
+        } else if (lnum && rbool) {
+            const int result = (op == PLUS_OP) ? lnum->value + rbool->value : lnum->value - rbool->value;
+            delete left;
+            delete right;
+            left = new NumberExp(result);
+            buffer.top() = std::to_string(result);
+        } else if (lbool && rnum) {
+            const int result = (op == PLUS_OP) ? lbool->value + rnum->value : lbool->value - rnum->value;
             delete left;
             delete right;
             left = new NumberExp(result);
@@ -329,8 +420,79 @@ Exp *Preprocessor::parseTerm() {
 
         const auto lnum = dynamic_cast<NumberExp *>(left);
         const auto rnum = dynamic_cast<NumberExp *>(right);
+        const auto lbool = dynamic_cast<BoolExp *>(left);
+        const auto rbool = dynamic_cast<BoolExp *>(right);
         if (lnum && rnum) {
-            const int result = (op == MUL_OP) ? lnum->value * rnum->value : lnum->value / rnum->value;
+            int result;
+            if (op == MUL_OP) {
+                result = lnum->value * rnum->value;
+            } else {
+                if (rnum->value == 0) {
+                    cerr << "Error: División por cero.\n";
+                    exit(1);
+                }
+                result = lnum->value / rnum->value;
+            }
+            delete left;
+            delete right;
+            left = new NumberExp(result);
+            buffer.top() = std::to_string(result);
+        } else if (lbool && rbool) {
+            int result;
+            if (op == MUL_OP) {
+                result = lbool->value * rbool->value;
+            } else {
+                if (rbool->value == 0) {
+                    cerr << "Error: División por cero.\n";
+                    exit(1);
+                }
+                result = lbool->value / rbool->value;
+            }
+            delete left;
+            delete right;
+            left = new BoolExp(result);
+            buffer.top() = std::to_string(result);
+        } else if (lnum && rbool) {
+            int result;
+            if (op == MUL_OP) {
+                result = lnum->value * rbool->value;
+            } else {
+                if (rbool->value == 0) {
+                    cerr << "Error: División por cero.\n";
+                    exit(1);
+                }
+                result = lnum->value / rbool->value;
+            }
+            delete left;
+            delete right;
+            left = new NumberExp(result);
+            buffer.top() = std::to_string(result);
+        } else if (lbool && rnum) {
+            int result;
+            if (op == MUL_OP) {
+                result = lbool->value * rnum->value;
+            } else {
+                if (rnum->value == 0) {
+                    cerr << "Error: División por cero.\n";
+                    exit(1);
+                }
+                result = lbool->value / rnum->value;
+            }
+            delete left;
+            delete right;
+            left = new BoolExp(result);
+            buffer.top() = std::to_string(result);
+        } else if (lnum && rbool) {
+            int result;
+            if (op == MUL_OP) {
+                result = lnum->value * rbool->value;
+            } else {
+                if (rbool->value == 0) {
+                    cerr << "Error: División por cero.\n";
+                    exit(1);
+                }
+                result = lnum->value / rbool->value;
+            }
             delete left;
             delete right;
             left = new NumberExp(result);
