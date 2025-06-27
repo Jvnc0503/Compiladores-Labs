@@ -3,11 +3,13 @@
 #include "scanner.h"
 #include "exp.h"
 #include <fstream>
+#include <stack>
 
 class Preprocessor {
     Scanner *scanner;
     Token *current, *previous;
-    ofstream out;
+    std::ofstream out;
+    std::stack<std::string> buffer;
 
     bool match(Token::Type ttype);
 
@@ -18,8 +20,6 @@ class Preprocessor {
     bool isAtEnd() const;
 
     list<Stm *> parseStmList();
-
-    Exp *parseExp();
 
     Exp *parseCExp();
 

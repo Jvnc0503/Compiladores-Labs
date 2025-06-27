@@ -1,0 +1,6 @@
+fun void main()
+var int a;
+a = 22;
+print(a);
+return(0)
+endfun

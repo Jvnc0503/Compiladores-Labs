@@ -5,6 +5,7 @@
 #include "parser.h"
 #include "visitor.h"
 #include "labelvisitor.h"
+#include "preprocessor.h"
 using namespace std;
 
 int main(int argc, const char *argv[]) {
@@ -30,7 +31,10 @@ int main(int argc, const char *argv[]) {
 
     string input_copy = input;
     Scanner scanner_test(input_copy.c_str());
-    Parser parser(&scanner);
+    Preprocessor preprocessor(&scanner_test);
+    Program *program = preprocessor.processProgram();
+    delete program;
+    /*Parser parser(&scanner);
     try {
         Program *program = parser.parseProgram();
         string inputFile(argv[1]);
@@ -52,6 +56,6 @@ int main(int argc, const char *argv[]) {
     } catch (const exception &e) {
         cout << "Error durante la ejecución: " << e.what() << endl;
         return 1;
-    }
+    }*/
     return 0;
 }
