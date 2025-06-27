@@ -32,11 +32,8 @@ int main(int argc, const char *argv[]) {
     string input_copy = input;
     Scanner scanner_test(input_copy.c_str());
     Preprocessor preprocessor(&scanner_test);
-    Program *program = preprocessor.processProgram();
-    delete program;
-    /*Parser parser(&scanner);
     try {
-        Program *program = parser.parseProgram();
+        Program *program = preprocessor.processProgram();
         string inputFile(argv[1]);
         size_t dotPos = inputFile.find_last_of('.');
         string baseName = (dotPos == string::npos) ? inputFile : inputFile.substr(0, dotPos);
@@ -54,8 +51,8 @@ int main(int argc, const char *argv[]) {
         outfile.close();
         delete program;
     } catch (const exception &e) {
-        cout << "Error durante la ejecución: " << e.what() << endl;
+        cerr << "Error durante la ejecución: " << e.what() << endl;
         return 1;
-    }*/
+    }
     return 0;
 }
